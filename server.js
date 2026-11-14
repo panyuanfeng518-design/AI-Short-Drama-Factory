@@ -34,7 +34,7 @@ app.post("/api/generate", async (req, res) => {
     const client = new OpenAI({ apiKey });
 
     const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-6",
+      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
       instructions: `
 你是一名专业真人影视短剧编剧和导演。
 请根据用户提供的故事制作一集短剧。
