@@ -121,5 +121,8 @@ $("genScript").onclick=async()=>{let story=$("story").value.trim();if(!story)ret
 $("copyScript").onclick=async()=>{if($("scriptOutput").hidden)return alert("还没有剧本结果");try{await navigator.clipboard.writeText($("scriptOutput").textContent);status("scriptStatus","剧本已复制。","ok")}catch(e){status("scriptStatus","请长按剧本文本手动复制。","err")}};
 (async()=>{try{db=await openDB();renderSlots({});showMaster("");await renderLibrary()}catch(e){alert("本地数据库初始化失败："+e.message)}})();
 </script>
+
+<script src="/character-sync.js"></script>
+
 </body>
 </html>
