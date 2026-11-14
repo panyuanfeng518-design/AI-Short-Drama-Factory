@@ -2,157 +2,473 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI短剧工厂</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #10131b;
-      color: #f5f7fb;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    .container {
-      max-width: 760px;
-      margin: auto;
-      padding: 22px 16px 50px;
-    }
-    h1 { font-size: 27px; margin-bottom: 8px; }
-    .sub { color: #9da8ba; margin-bottom: 25px; }
-    .card {
-      background: #1b2130;
-      border: 1px solid #30394d;
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
-    }
-    label {
-      display: block;
-      margin: 14px 0 8px;
-      font-weight: 600;
-    }
-    input, select, textarea {
-      width: 100%;
-      background: #101722;
-      color: white;
-      border: 1px solid #38445c;
-      border-radius: 10px;
-      padding: 13px;
-      font-size: 16px;
-    }
-    textarea { min-height: 150px; resize: vertical; }
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 12px;
-      padding: 15px;
-      background: #6b7cff;
-      color: white;
-      font-size: 16px;
-      font-weight: 700;
-      margin-top: 18px;
-    }
-    button:disabled { opacity: .5; }
-    #status { color: #aeb9ca; margin-top: 14px; }
-    #result {
-      white-space: pre-wrap;
-      line-height: 1.8;
-      overflow-wrap: anywhere;
-    }
-    .small { color: #8996aa; font-size: 13px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131b">
+<title>AI短剧工厂</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10131b;color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.container{max-width:850px;margin:auto;padding:20px 14px 50px}
+h1{font-size:26px;margin:5px 0}
+h2{font-size:20px}
+h3{font-size:17px}
+.sub,.small{color:#9da8ba}
+.sub{margin:8px 0 20px}
+.small{font-size:12px;line-height:1.6}
+.card{background:#1b2130;border:1px solid #30394d;border-radius:15px;padding:16px;margin-bottom:14px}
+label{display:block;margin:13px 0 7px;font-weight:600;font-size:14px}
+input,select,textarea{width:100%;background:#101722;color:white;border:1px solid #38445c;border-radius:9px;padding:12px;font-size:15px}
+textarea{min-height:100px;resize:vertical}
+button{border:0;border-radius:10px;padding:12px;background:#6b7cff;color:white;font-size:15px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.5}
+.btn2{background:#34425b}
+.btnDanger{background:#813d4b}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actions button{flex:1;min-width:100px}
+.tabs{display:flex;gap:8px;overflow:auto;margin:18px 0}
+.tab{white-space:nowrap;background:#293247;color:#dce3f3;padding:11px 15px}
+.tab.active{background:#6b7cff;color:white}
+.panel{display:none}
+.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.photoSlot{background:#101722;border:1px dashed #53617b;border-radius:11px;padding:9px;min-width:0}
+.photoSlot img,.sceneImage{width:100%;height:150px;object-fit:cover;border-radius:8px;background:#252d3d}
+.photoSlot input{font-size:12px;padding:7px;margin-top:6px}
+.photoSlot .small{text-align:center;margin-top:5px}
+.item{background:#151c29;border:1px solid #344057;border-radius:12px;padding:12px;margin-top:10px}
+.item img{width:100%;max-height:230px;object-fit:cover;border-radius:8px}
+.item h3{margin:7px 0}
+#result{white-space:pre-wrap;line-height:1.8;overflow-wrap:anywhere}
+.hidden{display:none!important}
+.status{margin-top:10px;color:#aeb9ca;font-size:13px;white-space:pre-wrap}
+hr{border:0;border-top:1px solid #30394d;margin:16px 0}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎬 AI短剧工厂</h1>
-    <div class="sub">真人影视 · AI剧本 · 自动分镜</div>
+<div class="container">
+<h1>🎬 AI短剧工厂</h1>
+<div class="sub">真人影视 · AI编剧 · 人物定妆 · 场景资料库</div>
 
-    <div class="card">
-      <label>短剧名称</label>
-      <input id="title" placeholder="例如：最后一封情书">
+<div class="card">
+  <div class="small">制作进度</div>
+  <h3>第一阶段：AI剧本 <span style="color:#62d99a">已接通</span></h3>
+  <h3>第二阶段：人物与场景资料库 <span style="color:#62d99a">正在启用</span></h3>
+  <h3>第三阶段：AI视频生成 <span style="color:#9da8ba">待接入</span></h3>
+</div>
 
-      <label>故事 / 小说内容</label>
-      <textarea id="story" placeholder="输入你的小说、故事梗概或剧情创意……"></textarea>
+<div class="tabs">
+  <button class="tab active" data-tab="script">AI剧本</button>
+  <button class="tab" data-tab="characters">人物资料库</button>
+  <button class="tab" data-tab="scenes">场景资料库</button>
+</div>
 
-      <label>单集时长</label>
-      <select id="duration">
-        <option value="30">30秒</option>
-        <option value="45" selected>45秒</option>
-        <option value="60">60秒</option>
-      </select>
+<!-- 剧本 -->
+<section class="panel active" id="script">
+<div class="card">
+<h2>✨ AI短剧剧本</h2>
+<label>短剧名称</label>
+<input id="title" placeholder="例如：最后一封情书">
+<label>故事 / 小说内容</label>
+<textarea id="story" placeholder="输入你的小说、故事梗概或剧情创意……"></textarea>
+<label>单集时长</label>
+<select id="duration">
+<option value="30">30秒</option>
+<option value="45" selected>45秒</option>
+<option value="60">60秒</option>
+</select>
+<label>题材类型</label>
+<select id="genre">
+<option>都市情感</option><option>悬疑反转</option>
+<option>霸总爱情</option><option>家庭伦理</option>
+<option>复仇爽剧</option><option>奇幻穿越</option>
+</select>
+<button id="generate" style="width:100%;margin-top:18px">✨ AI生成短剧剧本</button>
+<div id="status" class="status"></div>
+</div>
+<div class="card">
+<h3>生成结果</h3>
+<div id="result">等待生成剧本……</div>
+<button id="copyScript" class="btn2" style="width:100%;margin-top:15px">复制剧本</button>
+</div>
+</section>
 
-      <label>题材类型</label>
-      <select id="genre">
-        <option>都市情感</option>
-        <option>悬疑反转</option>
-        <option>霸总爱情</option>
-        <option>家庭伦理</option>
-        <option>复仇爽剧</option>
-        <option>奇幻穿越</option>
-      </select>
+<!-- 人物 -->
+<section class="panel" id="characters">
+<div class="card">
+<h2>🎭 人物资料库</h2>
+<p class="small">为每个角色建立固定的真人影视定妆参考。正面、侧面、全身三张图片分别保存，后续制作时可以反复使用。</p>
 
-      <button id="generate">✨ AI生成短剧剧本</button>
-      <div id="status"></div>
-    </div>
+<label>人物姓名 / 角色名称</label>
+<input id="charName" placeholder="例如：林晓雨">
+<label>年龄</label>
+<input id="charAge" placeholder="例如：25岁">
+<label>性别 / 外貌特征</label>
+<input id="charLook" placeholder="例如：女性，黑色长发，鹅蛋脸">
+<label>性格</label>
+<input id="charPersonality" placeholder="例如：独立、坚强、外冷内热">
+<label>固定服装</label>
+<input id="charClothes" placeholder="例如：白色衬衫、黑色长裤">
+<label>其他人物特征</label>
+<textarea id="charExtra" placeholder="补充五官、身材、妆容、配饰等，尽量固定角色特征。"></textarea>
 
-    <div class="card">
-      <h3>生成结果</h3>
-      <div id="result">等待生成剧本……</div>
-      <button id="copy" style="background:#34425b">复制剧本</button>
-    </div>
+<hr>
+<h3>人物三视图上传</h3>
+<div class="grid">
+<div class="photoSlot">
+<img id="charFrontPreview" alt="正面定妆照预览">
+<div class="small">① 正面定妆照</div>
+<input type="file" id="charFront" accept="image/*">
+</div>
+<div class="photoSlot">
+<img id="charSidePreview" alt="侧面定妆照预览">
+<div class="small">② 侧面定妆照</div>
+<input type="file" id="charSide" accept="image/*">
+</div>
+<div class="photoSlot">
+<img id="charFullPreview" alt="全身定妆照预览">
+<div class="small">③ 全身定妆照</div>
+<input type="file" id="charFull" accept="image/*">
+</div>
+</div>
+<div class="small">建议使用同一角色、同一套服装的三张照片。图片保存在当前设备的浏览器本地。</div>
 
-    <div class="small">
-      提示：视频生成、配音和自动剪辑将在后续阶段接入。
-    </div>
-  </div>
+<div class="actions">
+<button id="makeCharPrompt" class="btn2">生成三视图提示词</button>
+<button id="saveChar">保存人物资料</button>
+</div>
+<div id="charPrompt" class="status"></div>
+<div id="charStatus" class="status"></div>
+</div>
 
-  <script>
-    const $ = id => document.getElementById(id);
+<div class="card">
+<h3>已保存的人物</h3>
+<div id="characterList" class="small">暂无人物资料</div>
+</div>
+</section>
 
-    $("generate").onclick = async () => {
-      const story = $("story").value.trim();
+<!-- 场景 -->
+<section class="panel" id="scenes">
+<div class="card">
+<h2>🏙️ 场景资料库</h2>
+<p class="small">保存每个故事中的固定地点和环境参考，后续分镜可以重复调用。</p>
 
-      if (!story) {
-        alert("请先输入故事内容");
-        return;
-      }
+<label>场景名称</label>
+<input id="sceneName" placeholder="例如：女主角的公寓">
+<label>场景类型</label>
+<select id="sceneType">
+<option>住宅 / 公寓</option><option>办公室</option>
+<option>餐厅 / 咖啡厅</option><option>街道 / 城市</option>
+<option>医院</option><option>学校</option>
+<option>酒店</option><option>其他</option>
+</select>
+<label>环境描述</label>
+<textarea id="sceneDesc" placeholder="例如：现代城市公寓，落地窗，暖色灯光，灰色沙发，夜晚。"></textarea>
+<label>灯光与色调</label>
+<input id="sceneLight" placeholder="例如：电影感暖黄色灯光，写实色调">
+<label>场景参考图片</label>
+<input type="file" id="sceneFile" accept="image/*">
+<img id="scenePreview" class="sceneImage hidden" alt="场景预览">
+<div class="actions">
+<button id="makeScenePrompt" class="btn2">生成场景提示词</button>
+<button id="saveScene">保存场景资料</button>
+</div>
+<div id="scenePrompt" class="status"></div>
+<div id="sceneStatus" class="status"></div>
+</div>
 
-      $("generate").disabled = true;
-      $("status").textContent = "AI正在创作，请稍候……";
-      $("result").textContent = "";
+<div class="card">
+<h3>已保存的场景</h3>
+<div id="sceneList" class="small">暂无场景资料</div>
+</div>
+</section>
 
-      try {
-        const response = await fetch("/api/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: $("title").value,
-            story,
-            duration: $("duration").value,
-            genre: $("genre").value
-          })
-        });
+<div class="small">
+注意：人物和场景图片保存在当前浏览器设备中。清除 Safari 网站数据可能导致本地资料丢失，请定期导出备份。图片生成和视频生成服务尚未自动接通。
+</div>
+</div>
 
-        const data = await response.json();
+<script>
+const $ = id => document.getElementById(id);
+let db;
+let charFrontBlob=null, charSideBlob=null, charFullBlob=null, sceneBlob=null;
 
-        if (!response.ok) {
-          throw new Error(data.error || "生成失败");
-        }
+function openDB(){
+ return new Promise((resolve,reject)=>{
+  const request=indexedDB.open("AIDramaFactoryDB",1);
+  request.onupgradeneeded=()=>{
+   const d=request.result;
+   if(!d.objectStoreNames.contains("characters"))
+    d.createObjectStore("characters",{keyPath:"id"});
+   if(!d.objectStoreNames.contains("scenes"))
+    d.createObjectStore("scenes",{keyPath:"id"});
+  };
+  request.onsuccess=()=>{db=request.result;resolve(db)};
+  request.onerror=()=>reject(request.error);
+ });
+}
 
-        $("result").textContent = data.result;
-        $("status").textContent = "✅ 剧本生成成功";
-      } catch (error) {
-        $("status").textContent = "❌ " + error.message;
-      } finally {
-        $("generate").disabled = false;
-      }
-    };
+function storeData(store,mode,action){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(store,mode);
+  const result=action(tx.objectStore(store));
+  tx.oncomplete=()=>resolve(result);
+  tx.onerror=()=>reject(tx.error);
+ });
+}
 
-    $("copy").onclick = async () => {
-      await navigator.clipboard.writeText($("result").textContent);
-      alert("剧本已复制");
-    };
-  </script>
+function getAll(store){
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(store,"readonly");
+  const request=tx.objectStore(store).getAll();
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
+}
+
+function deleteItem(store,id){
+ return storeData(store,"readwrite",s=>s.delete(id));
+}
+
+function preview(inputId,imgId,callback){
+ $(inputId).addEventListener("change",()=>{
+  const file=$(inputId).files[0];
+  if(!file)return;
+  if(!file.type.startsWith("image/")){
+   alert("请选择图片文件");return;
+  }
+  if(file.size>8*1024*1024){
+   alert("单张图片请控制在8MB以内");return;
+  }
+  callback(file);
+  const url=URL.createObjectURL(file);
+  $(imgId).src=url;
+  $(imgId).classList.remove("hidden");
+ });
+}
+
+preview("charFront","charFrontPreview",f=>charFrontBlob=f);
+preview("charSide","charSidePreview",f=>charSideBlob=f);
+preview("charFull","charFullPreview",f=>charFullBlob=f);
+preview("sceneFile","scenePreview",f=>sceneBlob=f);
+
+document.querySelectorAll(".tab").forEach(btn=>{
+ btn.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  $(""+btn.dataset.tab).classList.add("active");
+ };
+});
+
+function characterPrompt(){
+ const name=$("charName").value.trim();
+ const age=$("charAge").value.trim();
+ const look=$("charLook").value.trim();
+ const personality=$("charPersonality").value.trim();
+ const clothes=$("charClothes").value.trim();
+ const extra=$("charExtra").value.trim();
+ if(!name||!look){alert("请至少填写人物姓名和外貌特征");return ""}
+ return `请制作一套真人影视角色定妆三视图，角色必须是同一个人。
+角色名称：${name}
+年龄：${age}
+外貌：${look}
+性格：${personality}
+固定服装：${clothes}
+其他特征：${extra}
+
+画面要求：
+1. 同一张画面中呈现三个清晰、独立的视图。
+2. 第一视图：人物正面半身定妆照，清楚展示五官。
+3. 第二视图：人物90度侧面半身定妆照，清楚展示脸型和发型。
+4. 第三视图：人物正面全身照，从头到脚完整展示身材和服装。
+5. 三个视图必须是同一演员、同一张脸、同一年龄、同一发型、同一套服装。
+6. 写实真人电影摄影风格，真实皮肤质感，自然光线，高质量影视定妆摄影。
+7. 背景简洁统一，不添加文字、水印、边框，不要卡通、动漫或插画风格。
+8. 人物比例自然，五官清晰，服装细节一致。`;
+}
+
+$("makeCharPrompt").onclick=async()=>{
+ const p=characterPrompt();
+ if(!p)return;
+ $("charPrompt").textContent=p;
+ try{await navigator.clipboard.writeText(p);$("charStatus").textContent="提示词已复制，可以粘贴到图片生成工具。"}catch(e){$("charStatus").textContent="提示词已生成，请长按复制。"}
+};
+
+$("saveChar").onclick=async()=>{
+ const name=$("charName").value.trim();
+ if(!name){alert("请填写人物姓名");return}
+ try{
+  const item={
+   id:crypto.randomUUID(),
+   name,
+   age:$("charAge").value,
+   look:$("charLook").value,
+   personality:$("charPersonality").value,
+   clothes:$("charClothes").value,
+   extra:$("charExtra").value,
+   front:charFrontBlob,
+   side:charSideBlob,
+   full:charFullBlob,
+   createdAt:Date.now()
+  };
+  await storeData("characters","readwrite",s=>s.add(item));
+  $("charStatus").textContent="✅ 人物资料已保存";
+  ["charName","charAge","charLook","charPersonality","charClothes","charExtra"].forEach(id=>$(id).value="");
+  ["charFrontPreview","charSidePreview","charFullPreview"].forEach(id=>{$(id).src="";$(id).classList.add("hidden")});
+  ["charFront","charSide","charFull"].forEach(id=>$(id).value="");
+  charFrontBlob=charSideBlob=charFullBlob=null;
+  await renderCharacters();
+ }catch(e){$("charStatus").textContent="保存失败："+e.message}
+};
+
+function scenePromptText(){
+ const name=$("sceneName").value.trim();
+ const desc=$("sceneDesc").value.trim();
+ const light=$("sceneLight").value.trim();
+ if(!name||!desc){alert("请填写场景名称和环境描述");return ""}
+ return `请生成真人影视电影场景参考图。
+场景名称：${name}
+场景类型：${$("sceneType").value}
+环境描述：${desc}
+灯光色调：${light}
+要求：写实电影摄影风格，真实空间结构，合理透视，细节丰富，光影自然。不要人物，不要文字，不要水印。后续镜头必须保持同一空间布局、家具位置和主要色调。`;
+}
+
+$("makeScenePrompt").onclick=async()=>{
+ const p=scenePromptText();
+ if(!p)return;
+ $("scenePrompt").textContent=p;
+ try{await navigator.clipboard.writeText(p);$("sceneStatus").textContent="场景提示词已复制。"}catch(e){$("sceneStatus").textContent="提示词已生成，请长按复制。"}
+};
+
+$("saveScene").onclick=async()=>{
+ const name=$("sceneName").value.trim();
+ if(!name){alert("请填写场景名称");return}
+ try{
+  await storeData("scenes","readwrite",s=>s.add({
+   id:crypto.randomUUID(),
+   name,
+   type:$("sceneType").value,
+   desc:$("sceneDesc").value,
+   light:$("sceneLight").value,
+   image:sceneBlob,
+   createdAt:Date.now()
+  }));
+  $("sceneStatus").textContent="✅ 场景资料已保存";
+  ["sceneName","sceneDesc","sceneLight"].forEach(id=>$(id).value="");
+  $("sceneFile").value="";
+  $("scenePreview").src="";
+  $("scenePreview").classList.add("hidden");
+  sceneBlob=null;
+  await renderScenes();
+ }catch(e){$("sceneStatus").textContent="保存失败："+e.message}
+};
+
+function imageURL(blob){
+ return blob?URL.createObjectURL(blob):"";
+}
+
+async function renderCharacters(){
+ const list=await getAll("characters");
+ $("characterList").innerHTML="";
+ if(!list.length){$("characterList").textContent="暂无人物资料";return}
+ list.sort((a,b)=>b.createdAt-a.createdAt);
+ list.forEach(c=>{
+  const el=document.createElement("div");
+  el.className="item";
+  const photos=[["正面",c.front],["侧面",c.side],["全身",c.full]];
+  const photoHTML=photos.map(([label,b])=>b?
+   `<div><img src="${imageURL(b)}" alt="${label}定妆照"><div class="small">${label}</div></div>`:
+   `<div class="photoSlot"><div class="small">${label}定妆照：未上传</div></div>`
+  ).join("");
+  el.innerHTML=`<h3></h3><div class="small"></div><div class="grid">${photoHTML}</div><div class="actions"><button class="btn2 copyPrompt">复制角色提示词</button><button class="btnDanger delete">删除人物</button></div>`;
+  el.querySelector("h3").textContent=c.name;
+  el.querySelector(".small").textContent=`${c.age||"年龄未填写"} · ${c.look||"未填写外貌"}`;
+  el.querySelector(".copyPrompt").onclick=async()=>{
+   const p=`真人影视角色：${c.name}。年龄：${c.age}。外貌：${c.look}。性格：${c.personality}。固定服装：${c.clothes}。其他：${c.extra}。请严格保持同一演员的脸、发型、年龄、服装一致。`;
+   try{await navigator.clipboard.writeText(p);alert("角色提示词已复制")}catch(e){alert(p)}
+  };
+  el.querySelector(".delete").onclick=async()=>{
+   if(confirm("确定删除这个人物及其图片吗？")){
+    await deleteItem("characters",c.id);await renderCharacters();
+   }
+  };
+  $("characterList").appendChild(el);
+ });
+}
+
+async function renderScenes(){
+ const list=await getAll("scenes");
+ $("sceneList").innerHTML="";
+ if(!list.length){$("sceneList").textContent="暂无场景资料";return}
+ list.sort((a,b)=>b.createdAt-a.createdAt);
+ list.forEach(s=>{
+  const el=document.createElement("div");
+  el.className="item";
+  if(s.image){
+   const img=document.createElement("img");
+   img.src=imageURL(s.image);
+   img.alt=s.name;
+   el.appendChild(img);
+  }
+  const h=document.createElement("h3");h.textContent=s.name;el.appendChild(h);
+  const p=document.createElement("div");p.className="small";
+  p.textContent=`${s.type} · ${s.desc} · ${s.light}`;el.appendChild(p);
+  const actions=document.createElement("div");actions.className="actions";
+  const copy=document.createElement("button");copy.className="btn2";copy.textContent="复制场景提示词";
+  copy.onclick=async()=>{
+   const prompt=`场景：${s.name}。类型：${s.type}。环境：${s.desc}。灯光：${s.light}。保持空间布局、家具位置和色调一致，真人电影写实风格。`;
+   try{await navigator.clipboard.writeText(prompt);alert("场景提示词已复制")}catch(e){alert(prompt)}
+  };
+  const del=document.createElement("button");del.className="btnDanger";del.textContent="删除场景";
+  del.onclick=async()=>{if(confirm("确定删除这个场景吗？")){await deleteItem("scenes",s.id);await renderScenes()}};
+  actions.append(copy,del);el.appendChild(actions);
+  $("sceneList").appendChild(el);
+ });
+}
+
+// 原有 Gemini 剧本功能保留
+$("generate").onclick=async()=>{
+ const story=$("story").value.trim();
+ if(!story){alert("请先输入故事内容");return}
+ $("generate").disabled=true;
+ $("status").textContent="AI正在创作，请稍候……";
+ $("result").textContent="";
+ try{
+  const response=await fetch("/api/generate",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    title:$("title").value,
+    story,
+    duration:$("duration").value,
+    genre:$("genre").value
+   })
+  });
+  const data=await response.json();
+  if(!response.ok)throw new Error(typeof data.error==="string"?data.error:JSON.stringify(data.error));
+  $("result").textContent=data.result||"AI没有返回文本";
+  $("status").textContent="✅ 剧本生成成功";
+ }catch(e){$("status").textContent="❌ "+e.message}
+ finally{$("generate").disabled=false}
+};
+
+$("copyScript").onclick=async()=>{
+ try{await navigator.clipboard.writeText($("result").textContent);alert("剧本已复制")}
+ catch(e){alert("复制失败，请长按选择剧本文字")}
+};
+
+(async()=>{
+ try{
+  await openDB();
+  await renderCharacters();
+  await renderScenes();
+ }catch(e){
+  alert("本地图片资料库初始化失败："+e.message);
+ }
+})();
+</script>
 </body>
 </html>
