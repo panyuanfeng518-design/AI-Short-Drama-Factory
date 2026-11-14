@@ -5,176 +5,382 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json({ limit: "2mb" }));
+// ================================
+// 基础配置
+// ================================
+
+app.use(express.json({ limit: "5mb" }));
 app.use(express.static(path.join(__dirname, "public")));
+
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+
+let aiClient = null;
+
+// ================================
+// Gemini 初始化
+// ================================
+
+async function getAI() {
+  if (aiClient) return aiClient;
+
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("Render 环境变量中没有设置 GEMINI_API_KEY");
+  }
+
+  const { GoogleGenAI } = await import("@google/genai");
+
+  aiClient = new GoogleGenAI({
+    apiKey
+  });
+
+  return aiClient;
+}
+
+// ================================
+// 文本清理
+// ================================
+
+function cleanText(value, maxLength = 5000) {
+  return String(value ?? "")
+    .replace(/\u0000/g, "")
+    .trim()
+    .slice(0, maxLength);
+}
+
+// ================================
+// JSON 解析
+// ================================
+
+function parseModelJson(text) {
+  if (!text) {
+    throw new Error("AI 没有返回内容");
+  }
+
+  let content = String(text).trim();
+
+  // 去掉 Markdown JSON 代码围栏
+  content = content
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  // 直接解析
+  try {
+    return JSON.parse(content);
+  } catch (_) {
+    // 尝试提取 JSON 对象
+    const start = content.indexOf("{");
+    const end = content.lastIndexOf("}");
+
+    if (start !== -1 && end > start) {
+      return JSON.parse(content.slice(start, end + 1));
+    }
+  }
+
+  throw new Error("AI 返回的数据不是有效 JSON，请重新生成");
+}
+
+// ================================
+// 人物资料标准化
+// ================================
+
+function normalizeCharacter(character) {
+  return {
+    name: cleanText(character.name, 80),
+    age: cleanText(character.age, 30),
+    gender: cleanText(character.gender, 20),
+    height: cleanText(character.height, 30),
+    identity: cleanText(character.identity, 300),
+    mood: cleanText(character.mood, 300),
+    look: cleanText(character.look, 500),
+    hair: cleanText(character.hair, 300),
+    clothes: cleanText(character.clothes, 500),
+    props: cleanText(character.props, 300),
+    extra: cleanText(character.extra, 500)
+  };
+}
+
+// ================================
+// Gemini 自动重试
+// ================================
+
+function isTemporaryError(error) {
+  const message = String(
+    error?.message || error || ""
+  ).toLowerCase();
+
+  return (
+    message.includes("503") ||
+    message.includes("unavailable") ||
+    message.includes("high demand") ||
+    message.includes("429") ||
+    message.includes("resource_exhausted") ||
+    message.includes("500") ||
+    message.includes("internal server error") ||
+    message.includes("502") ||
+    message.includes("504")
+  );
+}
+
+async function generateWithRetry(ai, request) {
+  const maxAttempts = 3;
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      console.log(
+        `Gemini 请求：第 ${attempt}/${maxAttempts} 次，模型：${MODEL}`
+      );
+
+      const response = await ai.models.generateContent({
+        model: MODEL,
+        ...request
+      });
+
+      if (!response || !response.text) {
+        throw new Error("Gemini 返回了空内容");
+      }
+
+      return response;
+
+    } catch (error) {
+      lastError = error;
+
+      console.error(
+        `Gemini 第 ${attempt} 次请求失败：`,
+        error?.message || error
+      );
+
+      if (!isTemporaryError(error) || attempt === maxAttempts) {
+        throw error;
+      }
+
+      // 逐步延长等待时间：2秒、4秒
+      const waitTime = attempt * 2000;
+
+      console.log(
+        `服务暂时繁忙，${waitTime / 1000} 秒后自动重试……`
+      );
+
+      await new Promise(resolve =>
+        setTimeout(resolve, waitTime)
+      );
+    }
+  }
+
+  throw lastError || new Error("Gemini 请求失败");
+}
+
+// ================================
+// 健康检查
+// ================================
 
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
-    service: "AI Short Drama Factory",
-    ai: "Gemini"
+    message: "AI短剧工厂服务运行正常",
+    model: MODEL
   });
 });
 
-function cleanText(value, max = 4000) {
-  return typeof value === "string"
-    ? value.trim().slice(0, max)
-    : "";
-}
-
-function normalizeCharacter(raw) {
-  if (!raw || typeof raw !== "object") return null;
-
-  const name = cleanText(raw.name, 100);
-  if (!name) return null;
-
-  return {
-    name,
-    age: cleanText(raw.age, 40),
-    gender: cleanText(raw.gender, 20) || "未指定",
-    height: cleanText(raw.height, 40),
-    identity: cleanText(raw.identity, 300),
-    mood: cleanText(raw.mood, 500),
-    look: cleanText(raw.look, 1500),
-    hair: cleanText(raw.hair, 500),
-    clothes: cleanText(raw.clothes, 800),
-    props: cleanText(raw.props, 500),
-    extra: cleanText(raw.extra, 800)
-  };
-}
-
-function parseModelJson(text) {
-  try {
-    return JSON.parse(text);
-  } catch (error) {
-    const match = String(text || "").match(/\{[\s\S]*\}/);
-    if (!match) {
-      throw new Error("Gemini返回的JSON格式不正确");
-    }
-    return JSON.parse(match[0]);
-  }
-}
+// ================================
+// AI 剧本生成
+// ================================
 
 app.post("/api/generate", async (req, res) => {
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const story = cleanText(req.body?.story, 10000);
+    const duration = cleanText(req.body?.duration || "45", 10);
+    const genre = cleanText(req.body?.genre || "都市短剧", 100);
 
-    if (!apiKey) {
-      return res.status(500).json({
-        ok: false,
-        error: "服务器尚未配置 GEMINI_API_KEY"
-      });
-    }
-
-    const { story, duration, genre } = req.body || {};
-
-    if (!story || typeof story !== "string" || !story.trim()) {
+    if (!story) {
       return res.status(400).json({
         ok: false,
-        error: "请先输入故事内容"
+        error: "请先填写故事内容"
       });
     }
 
-    const model =
-      process.env.GEMINI_MODEL || "gemini-3.8-flash";
+    const ai = await getAI();
 
-    const { GoogleGenAI } = await import("@google/genai");
-    const ai = new GoogleGenAI({ apiKey });
+    // ================================
+    // 系统指令
+    // ================================
 
-    const response = await ai.models.generateContent({
-      model,
-      contents: `
-故事内容：
-${story.trim()}
+    const systemInstruction = `
+你是一名专业的AI真人短剧编剧、导演和人物设定设计师。
 
-单集时长：${duration || "45"}秒
-题材类型：${genre || "都市情感"}
+请根据用户提供的故事要求，创作适合AI真人视频制作的中文短剧剧本。
 
-请生成完整短剧制作方案。
-      `,
-      config: {
-        responseMimeType: "application/json",
-        systemInstruction: `
-你是一名专业真人影视短剧编剧和导演。
+必须遵守以下要求：
 
-必须返回合法JSON，不要使用Markdown代码围栏。
+一、剧本要求
+1. 剧情完整，逻辑清晰。
+2. 人物性格鲜明。
+3. 对白自然，符合人物身份。
+4. 场景动作具体，方便AI视频生成。
+5. 重要情节要有视觉表现。
+6. 根据用户要求控制剧本时长。
+7. 如果用户要求连续剧，每集应有明确的冲突、反转和结尾悬念。
 
-JSON结构：
+二、人物资料要求
+请提取剧本中所有有实际剧情作用的人物，包括主角、重要配角和反派。
+
+每个人物尽可能提供：
+- name：人物姓名
+- age：年龄
+- gender：性别
+- height：身高
+- identity：身份背景
+- mood：性格气质
+- look：面部与外貌特征
+- hair：发型
+- clothes：服装
+- props：标志性道具
+- extra：其他视觉特征
+
+三、人物一致性
+1. 同一个人物在不同场景中必须保持身份一致。
+2. 不要把同一个人物重复创建为不同角色。
+3. 不要随意改变人物年龄、性别、外貌和身份。
+4. 没有明确的信息可以填写“未设定”，不要凭空编造关键身份信息。
+5. 人物姓名必须使用剧本中的正式称呼。
+
+四、输出格式
+只能输出合法 JSON。
+不要输出 Markdown。
+不要输出代码围栏。
+不要在 JSON 前后添加解释。
+
+JSON 格式必须如下：
+
 {
-  "script": "完整短剧剧本方案",
+  "script": "完整剧本内容",
   "characters": [
     {
-      "name": "姓名",
+      "name": "人物姓名",
       "age": "年龄",
       "gender": "性别",
       "height": "身高",
-      "identity": "人物身份",
+      "identity": "身份背景",
       "mood": "性格气质",
-      "look": "固定外貌",
-      "hair": "固定发型",
-      "clothes": "固定服装",
-      "props": "武器配饰",
-      "extra": "其他固定特征"
+      "look": "外貌特征",
+      "hair": "发型",
+      "clothes": "服装",
+      "props": "道具",
+      "extra": "其他特征"
     }
   ]
 }
 
-剧本要求：
-1. 使用中文。
-2. 真人影视风格。
-3. 输出剧名和故事梗概。
-4. 输出人物关系。
-5. 输出完整剧情、场景、动作和对白。
-6. 输出分镜表，包含镜头、画面、动作、对白和时长。
-7. 每个镜头提供AI视频生成提示词。
-8. 保持人物外貌、服装和场景一致。
-9. 不要声称已经生成视频。
+characters 必须是数组。
+如果没有明确人物，也必须返回空数组。
+`;
 
-人物要求：
-1. 提取所有有剧情作用的主要人物。
-2. 每个人物只出现一次。
-3. 姓名保持统一。
-4. 已知资料尽量填写完整。
-5. 未知年龄、身高、五官等信息留空，不得随意编造。
-6. 外貌、发型、服装应尽量具体。
-7. 人物资料必须适合后续真人演员定妆。
-8. script必须包含完整剧本。
-        `
+    // ================================
+    // 用户提示词
+    // ================================
+
+    const prompt = `
+请根据以下要求创作AI真人短剧。
+
+【故事内容】
+${story}
+
+【单集时长】
+${duration}分钟
+
+【题材类型】
+${genre}
+
+请输出完整剧本，并提取全部重要人物资料。
+
+剧本建议包含：
+1. 剧名
+2. 故事背景
+3. 人物关系
+4. 场景说明
+5. 完整剧情
+6. 人物对白
+7. 人物动作
+8. 镜头说明
+9. AI视频生成提示词
+
+请特别注意：
+人物资料必须与剧本中的人物保持一致。
+`;
+
+    // ================================
+    // 调用 Gemini（带自动重试）
+    // ================================
+
+    const response = await generateWithRetry(ai, {
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        systemInstruction
       }
     });
 
-    const parsed = parseModelJson(response.text || "{}");
+    // ================================
+    // 解析 AI 返回内容
+    // ================================
 
-    const characters = Array.isArray(parsed.characters)
-      ? parsed.characters
-          .map(normalizeCharacter)
-          .filter(Boolean)
-      : [];
+    const parsed = parseModelJson(response.text);
 
-    if (!parsed.script || typeof parsed.script !== "string") {
-      throw new Error("Gemini没有返回有效剧本");
+    const script = cleanText(parsed.script, 90000);
+
+    if (!script) {
+      throw new Error("AI 没有生成有效剧本内容");
     }
 
-    res.json({
+    const rawCharacters = Array.isArray(parsed.characters)
+      ? parsed.characters
+      : [];
+
+    const characters = rawCharacters
+      .filter(item => item && cleanText(item.name, 80))
+      .map(normalizeCharacter);
+
+    // ================================
+    // 返回网页
+    // ================================
+
+    return res.json({
       ok: true,
-      result: parsed.script,
+      result: script,
       characters,
       characterCount: characters.length,
-      model
+      model: MODEL
     });
 
   } catch (error) {
-    console.error("Gemini生成错误：", error);
+    console.error("剧本生成失败：", error);
 
-    res.status(500).json({
+    const message = String(
+      error?.message || "未知错误"
+    );
+
+    const temporary = isTemporaryError(error);
+
+    return res.status(temporary ? 503 : 500).json({
       ok: false,
-      error: error.message || "Gemini生成失败"
+      error: temporary
+        ? "Gemini 服务暂时繁忙，系统已经自动重试，请稍后再试。"
+        : message,
+      detail: message,
+      model: MODEL
     });
   }
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `AI Short Drama Factory running on port ${PORT}`
-  );
+// ================================
+// 启动服务
+// ================================
+
+app.listen(PORT, () => {
+  console.log(`AI短剧工厂已启动，端口：${PORT}`);
+  console.log(`当前 Gemini 模型：${MODEL}`);
 });
