@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AI短剧工厂｜分镜制作版</title>
+<title>AI短剧工厂｜第三阶段 Seedream生图中心</title>
 <style>
 :root{--bg:#0b1020;--card:#151d33;--line:#2b3655;--txt:#edf2ff;--muted:#9eabc9;--purple:#8b7cff;--teal:#39d6c5}
 *{box-sizing:border-box}
@@ -53,6 +53,14 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 .shot pre{margin-bottom:8px}
 .shot label{margin-top:8px}
 .shot .prompt{min-height:150px}
+.prompt-card{border:1px solid var(--line);border-radius:14px;background:#0d1426;padding:14px;margin:12px 0}
+.prompt-card textarea{min-height:170px}
+.prompt-card .negative{min-height:75px}
+.prompt-meta{color:var(--muted);font-size:12px;margin:5px 0}
+.pill{display:inline-block;background:#273251;color:#cbd6f5;padding:3px 8px;border-radius:20px;font-size:11px;margin-right:5px}
+.history-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0d1426;margin:10px 0}
+.history-item p{white-space:pre-wrap;overflow-wrap:anywhere}
+.history-item .actions button{flex:1}
 @media(min-width:760px){.slots{grid-template-columns:repeat(4,minmax(0,1fr))}.items{grid-template-columns:repeat(3,minmax(0,1fr))}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:21px}}
 @media(max-width:420px){.grid{grid-template-columns:1fr}h1{font-size:22px}}
 </style>
@@ -60,7 +68,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 <body>
 <header>
 <h1>🎬 AI短剧工厂</h1>
-<p class="muted">人物演员管理 · 场景库 · AI剧本 · 自动分镜 · 独立视频提示词</p>
+<p class="muted">人物演员管理 · 场景库 · AI剧本 · 自动分镜 · Seedream 4.5 生图提示词中心</p>
 </header>
 
 <main>
@@ -69,6 +77,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 <button class="tab" data-tab="storyboard">AI分镜</button>
 <button class="tab" data-tab="people">人物主档案</button>
 <button class="tab" data-tab="scenes">场景库</button>
+<button class="tab" data-tab="imagePrompts">Seedream生图</button>
 <button class="tab" data-tab="library">档案管理</button>
 </nav>
 
@@ -81,22 +90,12 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 <div class="grid">
 <div>
 <label>单集总时长</label>
-<select id="duration">
-<option value="60">60秒</option>
-<option value="90" selected>90秒</option>
-<option value="120">120秒</option>
-</select>
+<select id="duration"><option value="60">60秒</option><option value="90" selected>90秒</option><option value="120">120秒</option></select>
 </div>
 <div>
 <label>题材</label>
 <select id="genre">
-<option>都市情感</option>
-<option>悬疑反转</option>
-<option>家庭伦理</option>
-<option>古装</option>
-<option>职场</option>
-<option>喜剧</option>
-<option>其他</option>
+<option>都市情感</option><option>悬疑反转</option><option>家庭伦理</option><option>古装</option><option>职场</option><option>喜剧</option><option>其他</option>
 </select>
 </div>
 </div>
@@ -113,54 +112,24 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 <section id="storyboard" class="panel">
 <div class="card">
 <h2>第二阶段｜AI自动分镜制作中心</h2>
-<div class="note">AI会根据单集总时长和单次视频生成时长，自动规划镜头数量。每个镜头单独生成提示词，之后可以复制到你选择的视频平台手动生成。</div>
-
+<div class="note">AI会根据单集总时长和单次视频生成时长，自动规划镜头数量。每个镜头单独生成提示词。</div>
 <div class="grid">
-<div>
-<label>单集总时长</label>
-<select id="boardDuration">
-<option value="60">60秒</option>
-<option value="90" selected>90秒</option>
-<option value="120">120秒</option>
-</select>
+<div><label>单集总时长</label><select id="boardDuration"><option value="60">60秒</option><option value="90" selected>90秒</option><option value="120">120秒</option></select></div>
+<div><label>单次视频生成时长</label><select id="clipDuration"><option value="5">5秒</option><option value="10" selected>10秒</option><option value="15">15秒</option></select></div>
+<div><label>题材</label><select id="boardGenre"><option>都市情感</option><option>悬疑反转</option><option>家庭伦理</option><option>古装</option><option>职场</option><option>喜剧</option><option>其他</option></select></div>
 </div>
-<div>
-<label>单次视频生成时长</label>
-<select id="clipDuration">
-<option value="5">5秒</option>
-<option value="10" selected>10秒</option>
-<option value="15">15秒</option>
-</select>
-</div>
-<div>
-<label>题材</label>
-<select id="boardGenre">
-<option>都市情感</option>
-<option>悬疑反转</option>
-<option>家庭伦理</option>
-<option>古装</option>
-<option>职场</option>
-<option>喜剧</option>
-<option>其他</option>
-</select>
-</div>
-</div>
-
 <p id="shotCalculation" class="note">90秒 ÷ 10秒 = 9个镜头</p>
-
 <label>本集完整剧本</label>
 <textarea id="boardScript" placeholder="可以从AI剧本页面自动带入，也可以在这里粘贴完整剧本。"></textarea>
-
 <div class="actions">
 <button id="generateBoard">AI自动拆分镜头</button>
 <button class="secondary" id="copyAllPrompts">复制全部视频提示词</button>
 </div>
 <div id="boardStatus" class="status">等待生成分镜。</div>
 </div>
-
 <div class="card">
 <h2>镜头列表</h2>
-<p class="muted">每个镜头包含画面、动作、对白、运镜、声音、连续性要求和可直接使用的视频提示词。</p>
+<p class="muted">每个镜头包含画面、动作、对白、运镜、声音、连续性要求和视频提示词。</p>
 <div id="boardSummary" class="muted">尚未生成分镜。</div>
 <div id="shotList"></div>
 </div>
@@ -169,7 +138,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 <section id="people" class="panel">
 <div class="card">
 <h2>人物基础资料</h2>
-<p class="muted">先建立固定人物设定，再生成一张完整的真人影视多视图设定板。</p>
+<p class="muted">先建立固定人物设定，再生成真人影视多视图设定板。</p>
 <div class="grid">
 <div><label>人物姓名/代号 *</label><input id="pName" placeholder="苏清鸢"></div>
 <div><label>年龄</label><input id="pAge" placeholder="21岁"></div>
@@ -208,10 +177,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 <div class="card">
 <h2>② 辅助参考｜8视图单张图片</h2>
 <div id="viewSlots" class="slots"></div>
-<div class="actions">
-<button id="saveViews">保存辅助视图</button>
-<button class="secondary" id="emptyViews">清空预览</button>
-</div>
+<div class="actions"><button id="saveViews">保存辅助视图</button><button class="secondary" id="emptyViews">清空预览</button></div>
 </div>
 </section>
 
@@ -235,6 +201,95 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 </div>
 </section>
 
+<section id="imagePrompts" class="panel">
+<div class="card">
+<h2>第三阶段｜Seedream 4.5 生图提示词中心</h2>
+<div class="note">
+这里负责生成可复制到豆包 Seedream 4.5 的中文图片提示词，不会直接控制豆包App，也不会自动生成图片。生成后请复制提示词，打开豆包并选择 Seedream 4.5 使用。
+</div>
+
+<div class="grid">
+<div>
+<label>生图类型</label>
+<select id="promptCategory">
+<option value="character">人物演员定妆图</option>
+<option value="character_view">人物单视图（单张）</option>
+<option value="scene">场景设计图</option>
+<option value="prop">道具设计图</option>
+<option value="keyframe">剧情关键画面</option>
+<option value="storyboard">分镜静态参考图</option>
+<option value="all">全部类型</option>
+</select>
+</div>
+<div>
+<label>选择人物档案</label>
+<select id="promptPerson"><option value="">自动使用全部人物</option></select>
+</div>
+<div>
+<label>选择场景档案</label>
+<select id="promptScene"><option value="">自动使用全部场景</option></select>
+</div>
+<div>
+<label>单视图角度</label>
+<select id="promptView">
+<option>正面脸部特写</option>
+<option>45度脸部近景</option>
+<option>严格左侧90度脸部侧面</option>
+<option>严格右侧90度脸部侧面</option>
+<option>头部与上半身背面</option>
+<option>正面全身站立照</option>
+<option>侧面全身站立照</option>
+<option>自然表情参考</option>
+</select>
+</div>
+<div>
+<label>画面比例偏好</label>
+<select id="promptRatio">
+<option value="自动推荐">自动推荐</option>
+<option value="9:16">9:16 竖屏</option>
+<option value="16:9">16:9 横屏</option>
+<option value="3:2">3:2 横向</option>
+<option value="1:1">1:1 方图</option>
+<option value="2:3">2:3 竖向</option>
+</select>
+</div>
+<div>
+<label>题材</label>
+<select id="promptGenre">
+<option>都市情感</option><option>豪门逆袭</option><option>悬疑反转</option><option>家庭伦理</option><option>古装</option><option>职场</option><option>喜剧</option><option>其他</option>
+</select>
+</div>
+<div class="full">
+<label>本集剧本（可选）</label>
+<textarea id="promptScript" placeholder="可以自动读取当前剧本，也可以粘贴你希望AI参考的剧情内容。"></textarea>
+</div>
+<div class="full">
+<label>补充创作要求</label>
+<textarea id="promptExtra" placeholder="例如：人物必须保持已经锁定的脸型和发型；画面需要高级电影摄影质感；不要出现字幕和水印。"></textarea>
+</div>
+</div>
+
+<div class="actions">
+<button id="generateImagePrompts">生成Seedream提示词</button>
+<button class="secondary" id="loadPromptSources">刷新人物和场景</button>
+<button class="secondary" id="copyAllImagePrompts">复制全部提示词</button>
+</div>
+<div id="imagePromptStatus" class="status">选择类型后即可生成。建议先建立人物和场景档案。</div>
+</div>
+
+<div class="card">
+<h2>生成结果</h2>
+<div id="imagePromptSummary" class="muted">尚未生成生图提示词。</div>
+<div id="imagePromptResults"></div>
+</div>
+
+<div class="card">
+<h2>使用说明</h2>
+<p class="muted">① 选择生图类型和档案；② 点击生成；③ 检查人物一致性、场景和画面内容；④ 复制提示词；⑤ 打开豆包，选择 Seedream 4.5，粘贴并生成图片。</p>
+<p class="muted">人物单视图会将你选择的角度作为额外要求发送给AI。生成后仍建议检查是否只描述一张独立图片，而不是多视图拼图。</p>
+</div>
+</section>
+
 <section id="library" class="panel">
 <div class="card">
 <h2>人物主档案库</h2>
@@ -249,8 +304,14 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px so
 <div id="sceneList" class="items"></div>
 </div>
 <div class="card">
+<h2>Seedream提示词历史</h2>
+<p class="muted">历史记录保存在当前浏览器本地存储中。删除历史不会影响人物、场景和图片档案。</p>
+<div class="actions"><button class="secondary" id="exportPromptHistory">导出提示词历史</button></div>
+<div id="promptHistoryList"></div>
+</div>
+<div class="card">
 <h2>本地数据说明</h2>
-<p class="muted">人物、主档案设定板、辅助图片和场景保存在当前浏览器 IndexedDB。定期导出JSON备份。不要清除Safari网站数据，以免丢失本地档案。</p>
+<p class="muted">人物、主档案设定板、辅助图片和场景保存在当前浏览器 IndexedDB。提示词历史保存在浏览器本地存储。请定期导出JSON备份。不要清除Safari网站数据，以免丢失本地档案。</p>
 </div>
 </section>
 </main>
@@ -268,7 +329,8 @@ const VIEWS=[
 ["08 表情参考","同一人物自然微笑、严肃、惊讶三种表情"]
 ];
 
-let db,currentId=null,masterPrompt="",scenePromptText="",latestShots=[];
+const HISTORY_KEY="AIShortDramaSeedreamPromptHistoryV1";
+let db,currentId=null,masterPrompt="",scenePromptText="",latestShots=[],latestImagePrompts=[];
 
 function status(id,t,k=""){
   const e=$(id);
@@ -328,12 +390,41 @@ const fileData=f=>new Promise((res,rej)=>{
   r.readAsDataURL(f);
 });
 
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch(e){
+    const area=document.createElement("textarea");
+    area.value=text;
+    area.style.position="fixed";
+    area.style.opacity="0";
+    document.body.append(area);
+    area.focus();
+    area.select();
+    let ok=false;
+    try{ok=document.execCommand("copy")}catch(_){}
+    area.remove();
+    return ok;
+  }
+}
+
+function readHistory(){
+  try{
+    const data=JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]");
+    return Array.isArray(data)?data:[];
+  }catch(e){return []}
+}
+function writeHistory(list){
+  localStorage.setItem(HISTORY_KEY,JSON.stringify(list));
+}
+
 function switchTab(tab){
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));
   document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===tab));
   if(tab==="library")renderLibrary();
+  if(tab==="imagePrompts")loadPromptSources();
 }
-
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 
 function formPerson(){
@@ -469,12 +560,8 @@ $("makeMasterPrompt").onclick=()=>{
 
 $("copyMasterPrompt").onclick=async()=>{
   if(!masterPrompt)return alert("请先生成主档案提示词");
-  try{
-    await navigator.clipboard.writeText(masterPrompt);
-    status("personStatus","主档案提示词已复制。","ok");
-  }catch(e){
-    status("personStatus","复制失败，请长按提示词手动复制。","err");
-  }
+  const ok=await copyText(masterPrompt);
+  status("personStatus",ok?"主档案提示词已复制。":"复制失败，请长按提示词手动复制。",ok?"ok":"err");
 };
 
 $("savePerson").onclick=savePerson;
@@ -546,12 +633,8 @@ $("makeScenePrompt").onclick=()=>{
 
 $("copyScenePrompt").onclick=async()=>{
   if(!scenePromptText)$("makeScenePrompt").click();
-  try{
-    await navigator.clipboard.writeText(scenePromptText);
-    status("sceneStatus","场景提示词已复制。","ok");
-  }catch(e){
-    status("sceneStatus","请长按提示词手动复制。","err");
-  }
+  const ok=await copyText(scenePromptText);
+  status("sceneStatus",ok?"场景提示词已复制。":"请长按提示词手动复制。",ok?"ok":"err");
 };
 
 $("saveScene").onclick=async()=>{
@@ -632,19 +715,380 @@ async function renderLibrary(){
     d.append(im,h,p,a);
     $("sceneList").append(d);
   });
+
+  renderPromptHistory();
 }
+
+// =====================================
+// 提示词中心：档案读取和选择器
+// =====================================
+
+async function loadPromptSources(){
+  try{
+    const people=await getAll("people");
+    const scenes=await getAll("scenes");
+    const oldPerson=$("promptPerson").value;
+    const oldScene=$("promptScene").value;
+
+    $("promptPerson").replaceChildren();
+    let p0=document.createElement("option");
+    p0.value="";
+    p0.textContent="自动使用全部人物";
+    $("promptPerson").append(p0);
+
+    people.forEach(p=>{
+      const o=document.createElement("option");
+      o.value=p.id;
+      o.textContent=p.name;
+      $("promptPerson").append(o);
+    });
+
+    $("promptPerson").value=people.some(p=>p.id===oldPerson)?oldPerson:"";
+
+    $("promptScene").replaceChildren();
+    let s0=document.createElement("option");
+    s0.value="";
+    s0.textContent="自动使用全部场景";
+    $("promptScene").append(s0);
+
+    scenes.forEach(s=>{
+      const o=document.createElement("option");
+      o.value=s.id;
+      o.textContent=s.name;
+      $("promptScene").append(o);
+    });
+
+    $("promptScene").value=scenes.some(s=>s.id===oldScene)?oldScene:"";
+
+    status("imagePromptStatus",`档案读取完成：${people.length}个人物、${scenes.length}个场景。`,"ok");
+  }catch(e){
+    status("imagePromptStatus","读取人物和场景失败："+e.message,"err");
+  }
+}
+
+function categoryForRequest(value){
+  return value==="character_view"?"character":value;
+}
+
+function buildCharacterViewInstruction(){
+  if($("promptCategory").value!=="character_view")return "";
+  return `\n\n【本次特殊要求：只生成一张人物单视图图片】\n本次只为指定人物生成一条单张图片提示词，视图角度必须是：${$("promptView").value}。\n禁止生成多视图拼图、九宫格、角色设定板或多个角度组合图。画面中只出现同一个人物、一个视角、一张独立图片。`;
+}
+
+function renderImagePromptResults(prompts){
+  latestImagePrompts=prompts||[];
+  const root=$("imagePromptResults");
+  root.replaceChildren();
+
+  latestImagePrompts.forEach((p,index)=>{
+    const card=document.createElement("div");
+    card.className="prompt-card";
+
+    const title=document.createElement("h3");
+    title.textContent=`${index+1}. ${p.title||"生图提示词"}`;
+
+    const meta=document.createElement("div");
+    meta.className="prompt-meta";
+    meta.textContent=`类别：${p.category||"未分类"} · 对象：${p.subject||"未指定"} · 比例：${p.aspectRatio||"自动推荐"}`;
+
+    const purpose=document.createElement("p");
+    purpose.className="muted";
+    purpose.textContent=p.purpose||"";
+
+    const pl=document.createElement("label");
+    pl.textContent="Seedream 4.5 中文生图提示词";
+
+    const prompt=document.createElement("textarea");
+    prompt.value=p.prompt||"";
+    prompt.readOnly=true;
+
+    const rl=document.createElement("label");
+    rl.textContent="参考图上传建议";
+
+    const reference=document.createElement("p");
+    reference.className="muted";
+    reference.textContent=p.referenceGuide||"无";
+
+    const cl=document.createElement("label");
+    cl.textContent="人物/场景一致性要求";
+
+    const consistency=document.createElement("p");
+    consistency.className="muted";
+    consistency.textContent=p.consistency||"无";
+
+    const nl=document.createElement("label");
+    nl.textContent="负面提示词";
+
+    const negative=document.createElement("textarea");
+    negative.className="negative";
+    negative.value=p.negativePrompt||"";
+    negative.readOnly=true;
+
+    const actions=document.createElement("div");
+    actions.className="actions";
+
+    const cp=document.createElement("button");
+    cp.textContent="复制生图提示词";
+    cp.onclick=async()=>{
+      const ok=await copyText(prompt.value);
+      status("imagePromptStatus",ok?"已复制："+(p.title||"提示词"):"复制失败，请长按文本复制。",ok?"ok":"err");
+    };
+
+    const cn=document.createElement("button");
+    cn.className="secondary";
+    cn.textContent="复制负面提示词";
+    cn.onclick=async()=>{
+      const ok=await copyText(negative.value);
+      status("imagePromptStatus",ok?"负面提示词已复制。":"复制失败，请手动复制。",ok?"ok":"err");
+    };
+
+    actions.append(cp,cn);
+    card.append(title,meta,purpose,pl,prompt,rl,reference,cl,consistency,nl,negative,actions);
+    root.append(card);
+  });
+}
+
+$("generateImagePrompts").onclick=async()=>{
+  const button=$("generateImagePrompts");
+  button.disabled=true;
+  button.textContent="正在生成提示词…";
+  $("imagePromptResults").replaceChildren();
+  $("imagePromptSummary").textContent="Gemini正在分析档案和剧情，请稍候……";
+
+  try{
+    const allPeople=await getAll("people");
+    const allScenes=await getAll("scenes");
+
+    const selectedPerson=$("promptPerson").value;
+    const selectedScene=$("promptScene").value;
+
+    const people=selectedPerson
+      ?allPeople.filter(p=>p.id===selectedPerson)
+      :allPeople;
+
+    const scenes=selectedScene
+      ?allScenes.filter(s=>s.id===selectedScene)
+      :allScenes;
+
+    const category=$("promptCategory").value;
+    const requestCategory=categoryForRequest(category);
+
+    let script=$("promptScript").value.trim();
+    if(!script&&$("scriptOutput")&&!$("scriptOutput").hidden){
+      script=$("scriptOutput").textContent.trim();
+    }
+    if(!script&&$("boardScript"))script=$("boardScript").value.trim();
+
+    script+=buildCharacterViewInstruction();
+
+    const extra=$("promptExtra").value.trim();
+    if(extra)script+=`\n\n【用户额外创作要求】\n${extra}`;
+
+    const shots=latestShots.map(s=>({
+      shotNumber:s.shotNumber,
+      duration:s.duration,
+      shotTitle:s.shotTitle,
+      sceneName:s.sceneName,
+      characters:s.characters,
+      visual:s.visual,
+      action:s.action,
+      dialogue:s.dialogue,
+      camera:s.camera,
+      continuity:s.continuity
+    }));
+
+    const payload={
+      category:requestCategory,
+      genre:$("promptGenre").value,
+      script,
+      characters:people.map(p=>({
+        name:p.name,age:p.age,gender:p.gender,height:p.height,
+        identity:p.identity,mood:p.mood,look:p.look,hair:p.hair,
+        clothes:p.clothes,props:p.props,extra:p.extra
+      })),
+      scenes:scenes.map(s=>({
+        name:s.name,type:s.type,time:s.time,desc:s.desc
+      })),
+      shots
+    };
+
+    if(
+      !payload.script&&
+      !payload.characters.length&&
+      !payload.scenes.length&&
+      !payload.shots.length
+    ){
+      throw new Error("请先建立人物或场景档案，或填写剧本内容。");
+    }
+
+    status("imagePromptStatus","正在请求 /api/image-prompts……");
+
+    const r=await fetch("/api/image-prompts",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+
+    const d=await r.json();
+    if(!r.ok)throw Error(d.error||d.detail||"生图提示词生成失败");
+    if(!Array.isArray(d.prompts)||!d.prompts.length)throw Error("接口没有返回有效提示词");
+
+    let prompts=d.prompts;
+
+    if(category==="character_view"){
+      prompts=prompts.map(p=>({
+        ...p,
+        purpose:(p.purpose||"人物单视图")+
+          `；本次指定视图：${$("promptView").value}。请确认最终提示词只生成这一张单独图片。`
+      }));
+    }
+
+    const ratio=$("promptRatio").value;
+    if(ratio!=="自动推荐"){
+      prompts=prompts.map(p=>({...p,aspectRatio:ratio}));
+    }
+
+    latestImagePrompts=prompts;
+    renderImagePromptResults(prompts);
+
+    $("imagePromptSummary").textContent=
+      `${d.title||"Seedream 4.5 生图提示词"}｜共${prompts.length}条｜模型：${d.model||"Gemini"}。${d.summary||""}`;
+
+    // 将生成结果保存到独立的本地历史，不修改原有IndexedDB。
+    const history=readHistory();
+    history.unshift({
+      id:uid(),
+      title:d.title||"Seedream 4.5 生图提示词",
+      category,
+      genre:$("promptGenre").value,
+      createdAt:new Date().toISOString(),
+      prompts,
+      summary:d.summary||"",
+      model:d.model||""
+    });
+
+    writeHistory(history.slice(0,100));
+    status("imagePromptStatus",`生成成功！共${prompts.length}条提示词，已保存到本地历史。`,"ok");
+
+  }catch(e){
+    $("imagePromptSummary").textContent="生成失败。";
+    status("imagePromptStatus","生成失败："+e.message,"err");
+  }finally{
+    button.disabled=false;
+    button.textContent="生成Seedream提示词";
+  }
+};
+
+$("loadPromptSources").onclick=loadPromptSources;
+
+$("copyAllImagePrompts").onclick=async()=>{
+  if(!latestImagePrompts.length)return alert("请先生成生图提示词");
+
+  const text=latestImagePrompts.map((p,i)=>
+    `【${i+1}｜${p.title||"提示词"}】\n画幅：${p.aspectRatio||""}\n\n生图提示词：\n${p.prompt||""}\n\n负面提示词：\n${p.negativePrompt||""}`
+  ).join("\n\n--------------------------------\n\n");
+
+  const ok=await copyText(text);
+  status("imagePromptStatus",ok?"已复制全部生图提示词。":"复制失败，请逐条复制。",ok?"ok":"err");
+};
+
+function renderPromptHistory(){
+  const root=$("promptHistoryList");
+  if(!root)return;
+  root.replaceChildren();
+
+  const history=readHistory();
+  if(!history.length){
+    const p=document.createElement("p");
+    p.className="muted";
+    p.textContent="暂时没有保存的提示词记录。";
+    root.append(p);
+    return;
+  }
+
+  history.forEach(item=>{
+    const card=document.createElement("div");
+    card.className="history-item";
+
+    const h=document.createElement("h3");
+    h.textContent=item.title||"生图提示词记录";
+
+    const info=document.createElement("p");
+    info.className="muted";
+    info.textContent=`${item.category||"未分类"} · ${(item.prompts||[]).length}条 · ${item.createdAt?new Date(item.createdAt).toLocaleString():""}`;
+
+    const preview=document.createElement("p");
+    preview.textContent=(item.prompts||[]).slice(0,2).map(x=>x.title).join("、");
+
+    const actions=document.createElement("div");
+    actions.className="actions";
+
+    const view=document.createElement("button");
+    view.className="secondary";
+    view.textContent="查看";
+    view.onclick=()=>{
+      latestImagePrompts=item.prompts||[];
+      renderImagePromptResults(latestImagePrompts);
+      $("imagePromptSummary").textContent=item.title||"历史提示词";
+      switchTab("imagePrompts");
+    };
+
+    const cp=document.createElement("button");
+    cp.className="secondary";
+    cp.textContent="复制全部";
+    cp.onclick=async()=>{
+      const text=(item.prompts||[]).map((p,i)=>
+        `【${i+1}｜${p.title||"提示词"}】\n${p.prompt||""}\n\n负面提示词：\n${p.negativePrompt||""}`
+      ).join("\n\n----------------\n\n");
+      const ok=await copyText(text);
+      alert(ok?"历史提示词已复制。":"复制失败，请打开记录逐条复制。");
+    };
+
+    const del=document.createElement("button");
+    del.className="danger";
+    del.textContent="删除";
+    del.onclick=()=>{
+      if(!confirm("确定删除这条提示词历史？"))return;
+      writeHistory(readHistory().filter(x=>x.id!==item.id));
+      renderPromptHistory();
+    };
+
+    actions.append(view,cp,del);
+    card.append(h,info,preview,actions);
+    root.append(card);
+  });
+}
+
+$("exportPromptHistory").onclick=()=>{
+  const data={
+    app:"AI短剧工厂 Seedream提示词历史",
+    exportedAt:new Date().toISOString(),
+    prompts:readHistory()
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="AI短剧工厂_Seedream提示词历史.json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+// =====================================
+// 数据备份和导入
+// =====================================
 
 $("exportAll").onclick=async()=>{
   let data={
-    app:"AI短剧工厂第二阶段",
+    app:"AI短剧工厂第三阶段",
     exportedAt:new Date().toISOString(),
     people:await getAll("people"),
-    scenes:await getAll("scenes")
+    scenes:await getAll("scenes"),
+    promptHistory:readHistory()
   };
   let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   let a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="AI短剧工厂第二阶段备份.json";
+  a.download="AI短剧工厂第三阶段备份.json";
   a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
@@ -654,13 +1098,25 @@ $("importAll").onchange=async()=>{
   if(!f)return;
   try{
     let d=JSON.parse(await f.text());
-    if(!confirm(`导入 ${d.people?.length||0} 个人物、${d.scenes?.length||0} 个场景？`))return;
+    if(!confirm(`导入 ${d.people?.length||0} 个人物、${d.scenes?.length||0} 个场景、${d.promptHistory?.length||0} 条提示词历史？\n已有同ID档案会被备份内容更新。`))return;
     for(let p of d.people||[])await put("people",p);
     for(let s of d.scenes||[])await put("scenes",s);
+
+    if(Array.isArray(d.promptHistory)){
+      const current=readHistory();
+      const merged=new Map();
+      [...d.promptHistory,...current].forEach(x=>{
+        if(x&&x.id)merged.set(x.id,x);
+      });
+      writeHistory(Array.from(merged.values()).slice(0,100));
+    }
+
     await renderLibrary();
     alert("导入完成");
   }catch(e){
     alert("导入失败："+e.message);
+  }finally{
+    $("importAll").value="";
   }
 };
 
@@ -697,6 +1153,7 @@ $("genScript").onclick=async()=>{
     $("boardScript").value=d.result||"";
     $("boardDuration").value=String(d.duration||$("duration").value);
     $("boardGenre").value=$("genre").value;
+    $("promptScript").value=d.result||"";
 
     status("scriptStatus","生成成功 · "+(d.model||"Gemini")+" · "+d.duration+"秒","ok");
   }catch(e){
@@ -709,12 +1166,8 @@ $("genScript").onclick=async()=>{
 
 $("copyScript").onclick=async()=>{
   if($("scriptOutput").hidden)return alert("还没有剧本结果");
-  try{
-    await navigator.clipboard.writeText($("scriptOutput").textContent);
-    status("scriptStatus","剧本已复制。","ok");
-  }catch(e){
-    status("scriptStatus","请长按剧本文本手动复制。","err");
-  }
+  const ok=await copyText($("scriptOutput").textContent);
+  status("scriptStatus",ok?"剧本已复制。":"请长按剧本文本手动复制。",ok?"ok":"err");
 };
 
 $("toStoryboard").onclick=()=>{
@@ -739,10 +1192,6 @@ function updateShotCalculation(){
 }
 $("boardDuration").onchange=updateShotCalculation;
 $("clipDuration").onchange=updateShotCalculation;
-
-// =====================================
-// 自动分镜生成
-// =====================================
 
 function addDetail(container,title,value){
   const label=document.createElement("label");
@@ -796,14 +1245,8 @@ function renderShots(shots){
     const copy=document.createElement("button");
     copy.textContent="复制本镜头提示词";
     copy.onclick=async()=>{
-      try{
-        await navigator.clipboard.writeText(prompt.value);
-        status("boardStatus",`镜头${s.shotNumber}提示词已复制。`,"ok");
-      }catch(e){
-        prompt.focus();
-        prompt.select();
-        status("boardStatus","复制失败，请长按选中文本复制。","err");
-      }
+      const ok=await copyText(prompt.value);
+      status("boardStatus",ok?`镜头${s.shotNumber}提示词已复制。`:"复制失败，请长按选中文本复制。",ok?"ok":"err");
     };
 
     actions.append(copy);
@@ -831,7 +1274,6 @@ $("generateBoard").onclick=async()=>{
     const people=await getAll("people");
     const scenes=await getAll("scenes");
 
-    // 只发送人物和场景的文字资料，不发送图片Base64。
     const r=await fetch("/api/storyboard",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -876,17 +1318,8 @@ $("copyAllPrompts").onclick=async()=>{
     `【镜头${s.shotNumber}｜${s.duration}秒｜${s.shotTitle}】\n${s.videoPrompt}`
   ).join("\n\n------------------------------\n\n");
 
-  try{
-    await navigator.clipboard.writeText(text);
-    status("boardStatus",`已复制全部${latestShots.length}个镜头的视频提示词。`,"ok");
-  }catch(e){
-    const area=document.createElement("textarea");
-    area.value=text;
-    document.body.append(area);
-    area.select();
-    status("boardStatus","自动复制失败，请长按选中文本复制。","err");
-    area.remove();
-  }
+  const ok=await copyText(text);
+  status("boardStatus",ok?`已复制全部${latestShots.length}个镜头的视频提示词。`:"复制失败，请逐条复制。",ok?"ok":"err");
 };
 
 // =====================================
@@ -899,6 +1332,7 @@ $("copyAllPrompts").onclick=async()=>{
     renderSlots({});
     showMaster("");
     await renderLibrary();
+    await loadPromptSources();
     updateShotCalculation();
   }catch(e){
     alert("本地数据库初始化失败："+e.message);
