@@ -4,125 +4,908 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AI短剧工厂｜第二阶段正式版</title>
+<title>AI短剧工厂｜分镜制作版</title>
 <style>
 :root{--bg:#0b1020;--card:#151d33;--line:#2b3655;--txt:#edf2ff;--muted:#9eabc9;--purple:#8b7cff;--teal:#39d6c5}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#172044,#0b1020 48%);color:var(--txt);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:35px}
-header,main{max-width:1100px;margin:auto;padding:18px}header{padding-top:28px}h1{font-size:25px;margin:0 0 6px}h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:8px 0}p{margin:7px 0}.muted{color:var(--muted);font-size:13px}
-.tabs{display:flex;gap:8px;overflow:auto;position:sticky;top:0;background:#0b1020ee;padding:8px 0 14px;z-index:4}.tab{white-space:nowrap;border:1px solid var(--line);background:#151d33;color:var(--muted);padding:10px 13px;border-radius:12px;font-weight:700}.tab.active{background:var(--purple);color:#fff;border-color:var(--purple)}
-.panel{display:none}.panel.active{display:block}.card{background:linear-gradient(145deg,#151d33,#11182a);border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:14px}
-label{display:block;font-size:13px;color:#c6d0eb;margin:10px 0 5px}input,textarea,select{width:100%;border:1px solid #34405f;background:#0d1426;color:var(--txt);border-radius:11px;padding:11px;font:inherit}textarea{min-height:90px;resize:vertical}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.full{grid-column:1/-1}button{border:0;border-radius:11px;padding:11px 14px;background:var(--purple);color:#fff;font-weight:700;cursor:pointer;font-size:14px}button.secondary{background:#273251;color:#dbe4ff;border:1px solid #3a486b}button.danger{background:#4a2031;color:#ffb8c5;border:1px solid #743148}button:disabled{opacity:.55}
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.status{white-space:pre-wrap;background:#0d1426;color:var(--muted);padding:10px 12px;border-radius:10px;margin-top:10px}.status.ok{color:#8ee9d7}.status.err{color:#ff9eaf}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px solid var(--line);padding:12px;border-radius:12px}.slots,.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.slot,.item{border:1px solid var(--line);border-radius:13px;padding:10px;background:#0d1426;min-width:0}
-.slot img,.item img{width:100%;aspect-ratio:4/5;object-fit:cover;background:#18213a;border-radius:8px;display:block}.slot small,.item p{color:var(--muted);font-size:12px}.slot input{font-size:12px;padding:7px;margin-top:7px}.item img{aspect-ratio:4/3}.item p{white-space:pre-wrap;overflow-wrap:anywhere}.item .actions button{flex:1}
-.master-preview{width:100%;max-height:620px;object-fit:contain;background:#0b1222;border:1px solid var(--line);border-radius:12px;margin-top:10px}.master-empty{border:1px dashed #536080;border-radius:12px;padding:25px;text-align:center;color:var(--muted);margin-top:10px}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#172044,#0b1020 48%);color:var(--txt);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:35px}
+header,main{max-width:1100px;margin:auto;padding:18px}
+header{padding-top:28px}
+h1{font-size:25px;margin:0 0 6px}
+h2{font-size:18px;margin:0 0 12px}
+h3{font-size:15px;margin:8px 0}
+p{margin:7px 0}
+.muted{color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:8px;overflow:auto;position:sticky;top:0;background:#0b1020ee;padding:8px 0 14px;z-index:4}
+.tab{white-space:nowrap;border:1px solid var(--line);background:#151d33;color:var(--muted);padding:10px 13px;border-radius:12px;font-weight:700}
+.tab.active{background:var(--purple);color:#fff;border-color:var(--purple)}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:linear-gradient(145deg,#151d33,#11182a);border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:13px;color:#c6d0eb;margin:10px 0 5px}
+input,textarea,select{width:100%;border:1px solid #34405f;background:#0d1426;color:var(--txt);border-radius:11px;padding:11px;font:inherit}
+textarea{min-height:90px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.full{grid-column:1/-1}
+button{border:0;border-radius:11px;padding:11px 14px;background:var(--purple);color:#fff;font-weight:700;cursor:pointer;font-size:14px}
+button.secondary{background:#273251;color:#dbe4ff;border:1px solid #3a486b}
+button.danger{background:#4a2031;color:#ffb8c5;border:1px solid #743148}
+button:disabled{opacity:.55}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.status{white-space:pre-wrap;background:#0d1426;color:var(--muted);padding:10px 12px;border-radius:10px;margin-top:10px}
+.status.ok{color:#8ee9d7}
+.status.err{color:#ff9eaf}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1222;border:1px solid var(--line);padding:12px;border-radius:12px}
+.slots,.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.slot,.item{border:1px solid var(--line);border-radius:13px;padding:10px;background:#0d1426;min-width:0}
+.slot img,.item img{width:100%;aspect-ratio:4/5;object-fit:cover;background:#18213a;border-radius:8px;display:block}
+.slot small,.item p{color:var(--muted);font-size:12px}
+.slot input{font-size:12px;padding:7px;margin-top:7px}
+.item img{aspect-ratio:4/3}
+.item p{white-space:pre-wrap;overflow-wrap:anywhere}
+.item .actions button{flex:1}
+.master-preview{width:100%;max-height:620px;object-fit:contain;background:#0b1222;border:1px solid var(--line);border-radius:12px;margin-top:10px}
+.master-empty{border:1px dashed #536080;border-radius:12px;padding:25px;text-align:center;color:var(--muted);margin-top:10px}
 .note{border-left:3px solid var(--teal);padding:9px 12px;background:#10232c;border-radius:8px;color:#c9f7ef;font-size:13px}
+.shot{border:1px solid var(--line);border-radius:14px;background:#0d1426;padding:14px;margin:12px 0}
+.shot-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.shot-tag{color:#8ee9d7;font-size:12px}
+.shot pre{margin-bottom:8px}
+.shot label{margin-top:8px}
+.shot .prompt{min-height:150px}
 @media(min-width:760px){.slots{grid-template-columns:repeat(4,minmax(0,1fr))}.items{grid-template-columns:repeat(3,minmax(0,1fr))}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:21px}}
 @media(max-width:420px){.grid{grid-template-columns:1fr}h1{font-size:22px}}
 </style>
 </head>
 <body>
-<header><h1>🎬 AI短剧工厂</h1><p class="muted">第二阶段正式版 · 人物多视图主档案 / 8视图辅助参考 / 场景库 / AI剧本</p></header>
+<header>
+<h1>🎬 AI短剧工厂</h1>
+<p class="muted">人物演员管理 · 场景库 · AI剧本 · 自动分镜 · 独立视频提示词</p>
+</header>
+
 <main>
 <nav class="tabs">
-<button class="tab active" data-tab="script">AI剧本</button><button class="tab" data-tab="people">人物主档案</button><button class="tab" data-tab="scenes">场景库</button><button class="tab" data-tab="library">档案管理</button>
+<button class="tab active" data-tab="script">AI剧本</button>
+<button class="tab" data-tab="storyboard">AI分镜</button>
+<button class="tab" data-tab="people">人物主档案</button>
+<button class="tab" data-tab="scenes">场景库</button>
+<button class="tab" data-tab="library">档案管理</button>
 </nav>
 
 <section id="script" class="panel active">
 <div class="card">
-<h2>第一阶段｜Gemini剧本生成</h2><p class="muted">沿用现有服务器 /api/generate 接口，需要 Render 配置 GEMINI_API_KEY。</p>
-<label>故事内容</label><textarea id="story" placeholder="输入故事梗概、人物关系或本集剧情……"></textarea>
-<div class="grid"><div><label>单集时长</label><select id="duration"><option>30</option><option selected>45</option><option>60</option></select></div><div><label>题材</label><select id="genre"><option>都市情感</option><option>悬疑反转</option><option>家庭伦理</option><option>古装</option><option>职场</option><option>喜剧</option><option>其他</option></select></div></div>
-<div class="actions"><button id="genScript">生成剧本方案</button><button class="secondary" id="copyScript">复制剧本</button></div><div id="scriptStatus" class="status">等待输入故事。</div><pre id="scriptOutput" hidden></pre>
-</div></section>
+<h2>第一阶段｜Gemini剧本生成</h2>
+<p class="muted">单集时长统一使用秒。剧本生成后，可进入AI分镜页面自动拆镜头。</p>
+<label>故事内容</label>
+<textarea id="story" placeholder="输入故事梗概、人物关系或本集剧情……"></textarea>
+<div class="grid">
+<div>
+<label>单集总时长</label>
+<select id="duration">
+<option value="60">60秒</option>
+<option value="90" selected>90秒</option>
+<option value="120">120秒</option>
+</select>
+</div>
+<div>
+<label>题材</label>
+<select id="genre">
+<option>都市情感</option>
+<option>悬疑反转</option>
+<option>家庭伦理</option>
+<option>古装</option>
+<option>职场</option>
+<option>喜剧</option>
+<option>其他</option>
+</select>
+</div>
+</div>
+<div class="actions">
+<button id="genScript">生成剧本方案</button>
+<button class="secondary" id="copyScript">复制剧本</button>
+<button class="secondary" id="toStoryboard">进入AI分镜</button>
+</div>
+<div id="scriptStatus" class="status">等待输入故事。</div>
+<pre id="scriptOutput" hidden></pre>
+</div>
+</section>
+
+<section id="storyboard" class="panel">
+<div class="card">
+<h2>第二阶段｜AI自动分镜制作中心</h2>
+<div class="note">AI会根据单集总时长和单次视频生成时长，自动规划镜头数量。每个镜头单独生成提示词，之后可以复制到你选择的视频平台手动生成。</div>
+
+<div class="grid">
+<div>
+<label>单集总时长</label>
+<select id="boardDuration">
+<option value="60">60秒</option>
+<option value="90" selected>90秒</option>
+<option value="120">120秒</option>
+</select>
+</div>
+<div>
+<label>单次视频生成时长</label>
+<select id="clipDuration">
+<option value="5">5秒</option>
+<option value="10" selected>10秒</option>
+<option value="15">15秒</option>
+</select>
+</div>
+<div>
+<label>题材</label>
+<select id="boardGenre">
+<option>都市情感</option>
+<option>悬疑反转</option>
+<option>家庭伦理</option>
+<option>古装</option>
+<option>职场</option>
+<option>喜剧</option>
+<option>其他</option>
+</select>
+</div>
+</div>
+
+<p id="shotCalculation" class="note">90秒 ÷ 10秒 = 9个镜头</p>
+
+<label>本集完整剧本</label>
+<textarea id="boardScript" placeholder="可以从AI剧本页面自动带入，也可以在这里粘贴完整剧本。"></textarea>
+
+<div class="actions">
+<button id="generateBoard">AI自动拆分镜头</button>
+<button class="secondary" id="copyAllPrompts">复制全部视频提示词</button>
+</div>
+<div id="boardStatus" class="status">等待生成分镜。</div>
+</div>
+
+<div class="card">
+<h2>镜头列表</h2>
+<p class="muted">每个镜头包含画面、动作、对白、运镜、声音、连续性要求和可直接使用的视频提示词。</p>
+<div id="boardSummary" class="muted">尚未生成分镜。</div>
+<div id="shotList"></div>
+</div>
+</section>
 
 <section id="people" class="panel">
 <div class="card">
-<h2>人物基础资料</h2><p class="muted">先建立固定人物设定，再生成一张完整的真人影视多视图设定板。设定板是人物主档案。</p>
+<h2>人物基础资料</h2>
+<p class="muted">先建立固定人物设定，再生成一张完整的真人影视多视图设定板。</p>
 <div class="grid">
-<div><label>人物姓名/代号 *</label><input id="pName" placeholder="苏清鸢"></div><div><label>年龄</label><input id="pAge" placeholder="21岁"></div><div><label>性别</label><select id="pGender"><option>女性</option><option>男性</option><option>其他</option></select></div>
-<div><label>身高</label><input id="pHeight" placeholder="172cm"></div><div><label>人物身份</label><input id="pIdentity" placeholder="宗门天才、女主角"></div><div><label>性格气质</label><input id="pMood" placeholder="冷艳、沉稳、果断"></div>
-<div class="full"><label>固定外貌（脸型、五官、肤色、身材）</label><textarea id="pLook" placeholder="描述人物脸型、眼睛、鼻子、嘴唇、肤色、身材等，尽量具体……"></textarea></div>
-<div><label>固定发型</label><input id="pHair" placeholder="乌黑长发，高发髻"></div><div><label>固定服装</label><input id="pClothes" placeholder="黑色刺绣长裙、束腰"></div><div><label>武器/配饰</label><input id="pProps" placeholder="长剑、耳饰、发簪"></div>
-<div class="full"><label>其他固定特征</label><textarea id="pExtra" placeholder="妆容、标志性细节、不可改变的特征……"></textarea></div>
+<div><label>人物姓名/代号 *</label><input id="pName" placeholder="苏清鸢"></div>
+<div><label>年龄</label><input id="pAge" placeholder="21岁"></div>
+<div><label>性别</label><select id="pGender"><option>女性</option><option>男性</option><option>其他</option></select></div>
+<div><label>身高</label><input id="pHeight" placeholder="172cm"></div>
+<div><label>人物身份</label><input id="pIdentity" placeholder="宗门天才、女主角"></div>
+<div><label>性格气质</label><input id="pMood" placeholder="冷艳、沉稳、果断"></div>
+<div class="full"><label>固定外貌</label><textarea id="pLook" placeholder="描述人物脸型、眼睛、鼻子、嘴唇、肤色、身材等……"></textarea></div>
+<div><label>固定发型</label><input id="pHair" placeholder="乌黑长发，高发髻"></div>
+<div><label>固定服装</label><input id="pClothes" placeholder="黑色刺绣长裙"></div>
+<div><label>武器/配饰</label><input id="pProps" placeholder="长剑、耳饰、发簪"></div>
+<div class="full"><label>其他固定特征</label><textarea id="pExtra"></textarea></div>
 </div>
-<div class="actions"><button id="makeMasterPrompt">生成完整多视图设定板提示词</button><button class="secondary" id="savePerson">保存人物资料</button><button class="secondary" id="clearPerson">新建人物</button></div>
+<div class="actions">
+<button id="makeMasterPrompt">生成完整多视图设定板提示词</button>
+<button class="secondary" id="savePerson">保存人物资料</button>
+<button class="secondary" id="clearPerson">新建人物</button>
+</div>
 <div id="personStatus" class="status">尚未创建人物。</div>
 </div>
 
 <div class="card">
 <h2>① 人物主档案｜完整多视图设定板</h2>
-<div class="note">主档案要求：一张横向完整设定板，包含人物资料、正面/45度/侧面/背面视角、正面全身定妆照，以及脸部、服装、武器配饰细节。所有视图必须是同一个角色。</div>
+<div class="note">一张横向完整设定板，包含正面、45度、侧面、背面、全身定妆照和细节。所有视图必须是同一个角色。</div>
 <div class="actions"><button id="copyMasterPrompt">复制主档案提示词</button></div>
-<pre id="masterPromptBox">填写人物资料后，点击“生成完整多视图设定板提示词”。</pre>
-<label>上传生成好的完整设定板图片</label><input id="masterFile" type="file" accept="image/*">
+<pre id="masterPromptBox">填写人物资料后，点击生成提示词。</pre>
+<label>上传生成好的完整设定板图片</label>
+<input id="masterFile" type="file" accept="image/*">
 <div id="masterPreviewWrap"><div class="master-empty">尚未上传人物主档案设定板</div></div>
-<div class="actions"><button id="saveMasterBoard">保存人物主档案设定板</button><button class="secondary" id="removeMasterBoard">移除当前设定板</button></div>
-<p class="muted">建议在豆包中生成横向16:9或3:2构图。上传后会保存在当前 Safari 的本地档案中。</p>
+<div class="actions">
+<button id="saveMasterBoard">保存人物主档案设定板</button>
+<button class="secondary" id="removeMasterBoard">移除当前设定板</button>
+</div>
 </div>
 
 <div class="card">
-<h2>② 辅助参考｜8视图单张图片（可选）</h2><p class="muted">主档案设定板优先使用；以下8张单独视图用于补充细节，不是必填。</p>
+<h2>② 辅助参考｜8视图单张图片</h2>
 <div id="viewSlots" class="slots"></div>
-<div class="actions"><button id="saveViews">保存辅助视图</button><button class="secondary" id="emptyViews">清空预览</button></div>
+<div class="actions">
+<button id="saveViews">保存辅助视图</button>
+<button class="secondary" id="emptyViews">清空预览</button>
+</div>
 </div>
 </section>
 
 <section id="scenes" class="panel">
-<div class="card"><h2>场景参考档案</h2>
-<div class="grid"><div><label>场景名称 *</label><input id="sName" placeholder="女主公寓客厅"></div><div><label>场景类型</label><input id="sType" placeholder="现代公寓"></div><div><label>时间/氛围</label><input id="sTime" placeholder="夜晚、冷色灯光"></div><div class="full"><label>固定空间描述</label><textarea id="sDesc" placeholder="空间布局、家具位置、色彩、光线、关键道具……"></textarea></div><div class="full"><label>场景参考图</label><input id="sFile" type="file" accept="image/*"></div></div>
-<div class="actions"><button id="saveScene">保存场景</button><button class="secondary" id="makeScenePrompt">生成场景提示词</button><button class="secondary" id="copyScenePrompt">复制提示词</button></div><pre id="scenePrompt">填写场景信息后生成提示词。</pre><div id="sceneStatus" class="status"></div>
-</div></section>
+<div class="card">
+<h2>场景参考档案</h2>
+<div class="grid">
+<div><label>场景名称 *</label><input id="sName" placeholder="女主公寓客厅"></div>
+<div><label>场景类型</label><input id="sType" placeholder="现代公寓"></div>
+<div><label>时间/氛围</label><input id="sTime" placeholder="夜晚、冷色灯光"></div>
+<div class="full"><label>固定空间描述</label><textarea id="sDesc" placeholder="空间布局、家具位置、色彩、光线、关键道具……"></textarea></div>
+<div class="full"><label>场景参考图</label><input id="sFile" type="file" accept="image/*"></div>
+</div>
+<div class="actions">
+<button id="saveScene">保存场景</button>
+<button class="secondary" id="makeScenePrompt">生成场景提示词</button>
+<button class="secondary" id="copyScenePrompt">复制提示词</button>
+</div>
+<pre id="scenePrompt">填写场景信息后生成提示词。</pre>
+<div id="sceneStatus" class="status"></div>
+</div>
+</section>
 
 <section id="library" class="panel">
-<div class="card"><h2>人物主档案库</h2><div class="actions"><button class="secondary" id="exportAll">导出JSON备份</button><label style="margin:0"><input id="importAll" type="file" accept="application/json"></label></div><div id="peopleList" class="items"></div></div>
-<div class="card"><h2>场景档案库</h2><div id="sceneList" class="items"></div></div>
-<div class="card"><h2>本地数据说明</h2><p class="muted">人物、主档案设定板、辅助图片和场景保存在当前浏览器 IndexedDB，不会自动上传服务器。定期导出JSON备份；清除Safari网站数据可能删除本地档案。备份含图片数据，文件可能较大。</p></div>
+<div class="card">
+<h2>人物主档案库</h2>
+<div class="actions">
+<button class="secondary" id="exportAll">导出JSON备份</button>
+<label style="margin:0"><input id="importAll" type="file" accept="application/json"></label>
+</div>
+<div id="peopleList" class="items"></div>
+</div>
+<div class="card">
+<h2>场景档案库</h2>
+<div id="sceneList" class="items"></div>
+</div>
+<div class="card">
+<h2>本地数据说明</h2>
+<p class="muted">人物、主档案设定板、辅助图片和场景保存在当前浏览器 IndexedDB。定期导出JSON备份。不要清除Safari网站数据，以免丢失本地档案。</p>
+</div>
 </section>
 </main>
 
 <script>
 const $=id=>document.getElementById(id);
-const VIEWS=[["01 正面脸部","正面脸部特写，平视镜头"],["02 45度脸部","脸部转向约45度的近景"],["03 左侧脸","严格左侧90度脸部侧面"],["04 右侧脸","严格右侧90度脸部侧面"],["05 背面","头部与上半身背面，展示发型及衣服背部"],["06 正面全身","正面站立全身，头到鞋完整入镜"],["07 侧面全身","侧面站立全身，头到鞋完整入镜"],["08 表情参考","同一人物自然微笑、严肃、惊讶三种表情"]];
-let db,currentId=null,masterPrompt="",scenePromptText="";
-function status(id,t,k=""){const e=$(id);e.textContent=t;e.className="status "+k}
-function openDB(){return new Promise((resolve,reject)=>{let r=indexedDB.open("AIShortDramaStage2DB",1);r.onupgradeneeded=()=>{let d=r.result;if(!d.objectStoreNames.contains("people"))d.createObjectStore("people",{keyPath:"id"});if(!d.objectStoreNames.contains("scenes"))d.createObjectStore("scenes",{keyPath:"id"})};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
-function getAll(s){return new Promise((res,rej)=>{let r=db.transaction(s).objectStore(s).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function getOne(s,id){return new Promise((res,rej)=>{let r=db.transaction(s).objectStore(s).get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-function put(s,o){return new Promise((res,rej)=>{let t=db.transaction(s,"readwrite");t.objectStore(s).put(o);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-function remove(s,id){return new Promise((res,rej)=>{let t=db.transaction(s,"readwrite");t.objectStore(s).delete(id);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
-const fileData=f=>new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab));if(b.dataset.tab==="library")renderLibrary()});
-function formPerson(){return{name:$("pName").value.trim(),age:$("pAge").value.trim(),gender:$("pGender").value,height:$("pHeight").value.trim(),identity:$("pIdentity").value.trim(),mood:$("pMood").value.trim(),look:$("pLook").value.trim(),hair:$("pHair").value.trim(),clothes:$("pClothes").value.trim(),props:$("pProps").value.trim(),extra:$("pExtra").value.trim()}}
-function buildMasterPrompt(p){return `请生成一张专业电影/电视剧真人角色定妆多视图设定板（character reference sheet），横向16:9或3:2画幅，干净浅灰或白色摄影棚背景，真实摄影质感，高清细节，排版整齐、各视图边界清楚。\n\n【人物资料区】姓名：${p.name}；年龄：${p.age||"未指定"}；性别：${p.gender}；身高：${p.height||"未指定"}；身份：${p.identity||"未指定"}；性格气质：${p.mood||"未指定"}。\n【角色外貌锁定】${p.look||"按人物设定保持自然真实"}。\n【发型锁定】${p.hair||"按人物设定"}。\n【服装锁定】${p.clothes||"按人物设定"}。\n【武器及配饰】${p.props||"无特别道具"}。\n【其他固定特征】${p.extra||"无"}。\n\n【画面必须包含】1. 同一人物正面全身站姿；2. 同一人物45度角全身或半身视图；3. 同一人物严格侧面视图；4. 同一人物背面视图；5. 清晰正面脸部特写；6. 服装材质与关键配饰/武器细节特写；7. 可加入一格自然表情参考。左侧或上方安排简洁人物资料栏，其他区域以规整网格展示视图。\n\n【一致性硬性要求】所有视图必须是同一个人，脸型、五官比例、眼睛、鼻子、嘴唇、肤色、年龄感、发型、发色、身高体型、服装款式与颜色完全一致；不得出现不同人物，不得擅自换装，不得改变发型或武器。全身图必须完整显示头部至鞋子。每个视角清晰可辨，人物比例真实，手部结构正确。\n\n【画面质量】真人影视演员定妆照风格，电影级写实摄影，真实皮肤纹理，精细服装材质，柔和均匀影棚灯光，清晰锐利，专业影视角色设计档案板。避免卡通、动漫、插画、油画、夸张美颜、重复肢体、文字乱码、水印、无关人物。若模型无法准确生成文字，资料栏可留白，但人物视图必须完整。`;}
-function showMaster(src){let w=$("masterPreviewWrap");w.replaceChildren();if(!src){let d=document.createElement("div");d.className="master-empty";d.textContent="尚未上传人物主档案设定板";w.append(d);return}let im=document.createElement("img");im.className="master-preview";im.alt="人物主档案多视图设定板";im.src=src;w.append(im)}
-async function fillPerson(p){currentId=p.id;for(let [k,e] of [["name","pName"],["age","pAge"],["gender","pGender"],["height","pHeight"],["identity","pIdentity"],["mood","pMood"],["look","pLook"],["hair","pHair"],["clothes","pClothes"],["props","pProps"],["extra","pExtra"]])$(e).value=p[k]||"";masterPrompt=p.masterPrompt||"";$("masterPromptBox").textContent=masterPrompt||"点击按钮生成主档案提示词";showMaster(p.masterBoard||"");renderSlots(p.images||{});status("personStatus","正在编辑："+p.name,"ok")}
-function renderSlots(images={}){$("viewSlots").replaceChildren();VIEWS.forEach((v,i)=>{let d=document.createElement("div");d.className="slot";let im=document.createElement("img");im.alt=v[0];im.src=images[i]||"";let b=document.createElement("b");b.textContent=v[0];let sm=document.createElement("small");sm.textContent=v[1];let inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.dataset.i=i;inp.onchange=async()=>{if(inp.files[0])im.src=await fileData(inp.files[0])};d.append(im,b,sm,inp);$("viewSlots").append(d)})}
-async function savePerson(){let p=formPerson();if(!p.name){status("personStatus","人物姓名不能为空。","err");return null}let old=currentId?await getOne("people",currentId):null;p={...(old||{}),...p,id:currentId||uid(),masterPrompt:masterPrompt||old?.masterPrompt||"",masterBoard:old?.masterBoard||"",images:old?.images||{},updatedAt:new Date().toISOString()};await put("people",p);currentId=p.id;status("personStatus","人物资料已保存："+p.name,"ok");return p}
-$("makeMasterPrompt").onclick=()=>{let p=formPerson();if(!p.name)return status("personStatus","请先填写人物姓名。","err");masterPrompt=buildMasterPrompt(p);$("masterPromptBox").textContent=masterPrompt;status("personStatus","完整多视图主档案提示词已生成。复制后到豆包生成一张设定板。","ok")};
-$("copyMasterPrompt").onclick=async()=>{if(!masterPrompt)return alert("请先生成主档案提示词");try{await navigator.clipboard.writeText(masterPrompt);status("personStatus","主档案提示词已复制。","ok")}catch(e){status("personStatus","复制失败，请长按提示词文本手动复制。","err")}};
-$("savePerson").onclick=savePerson;
-$("masterFile").onchange=async()=>{let f=$("masterFile").files[0];if(f)showMaster(await fileData(f))};
-$("saveMasterBoard").onclick=async()=>{let p=await savePerson();if(!p)return;let f=$("masterFile").files[0];if(f)p.masterBoard=await fileData(f);else if(!p.masterBoard)return status("personStatus","请先选择一张设定板图片。","err");await put("people",p);showMaster(p.masterBoard);status("personStatus","人物主档案设定板已保存。","ok")};
-$("removeMasterBoard").onclick=async()=>{if(!currentId)return showMaster("");let p=await getOne("people",currentId);if(!p)return;delete p.masterBoard;await put("people",p);$("masterFile").value="";showMaster("");status("personStatus","主档案设定板已从档案中移除。","ok")};
-$("saveViews").onclick=async()=>{let p=await savePerson();if(!p)return;for(let inp of $("viewSlots").querySelectorAll('input[type=file]'))if(inp.files[0])p.images[inp.dataset.i]=await fileData(inp.files[0]);await put("people",p);renderSlots(p.images);status("personStatus",`人物资料及辅助视图已保存（${Object.keys(p.images).length}/8）。`,"ok")};
-$("emptyViews").onclick=()=>{renderSlots({});status("personStatus","辅助视图预览已清空；未保存前不会删除档案中的图片。")};
-$("clearPerson").onclick=()=>{currentId=null;masterPrompt="";["pName","pAge","pHeight","pIdentity","pMood","pLook","pHair","pClothes","pProps","pExtra"].forEach(x=>$(x).value="");$("pGender").value="女性";$("masterPromptBox").textContent="填写人物资料后生成主档案提示词。";$("masterFile").value="";showMaster("");renderSlots({});status("personStatus","已清空表单，可以创建新人物。")};
+const VIEWS=[
+["01 正面脸部","正面脸部特写，平视镜头"],
+["02 45度脸部","脸部转向约45度的近景"],
+["03 左侧脸","严格左侧90度脸部侧面"],
+["04 右侧脸","严格右侧90度脸部侧面"],
+["05 背面","头部与上半身背面，展示发型及衣服背部"],
+["06 正面全身","正面站立全身，头到鞋完整入镜"],
+["07 侧面全身","侧面站立全身，头到鞋完整入镜"],
+["08 表情参考","同一人物自然微笑、严肃、惊讶三种表情"]
+];
 
-$("makeScenePrompt").onclick=()=>{scenePromptText=`真人影视场景参考图，电影级写实摄影。场景：${$("sName").value}；类型：${$("sType").value}；时间氛围：${$("sTime").value}；固定空间与陈设：${$("sDesc").value}。保持布局、家具位置、色彩、光线方向与关键道具一致；真实材质、清晰细节，无文字无水印。`;$("scenePrompt").textContent=scenePromptText};
-$("copyScenePrompt").onclick=async()=>{if(!scenePromptText)$("makeScenePrompt").click();try{await navigator.clipboard.writeText(scenePromptText);status("sceneStatus","场景提示词已复制。","ok")}catch(e){status("sceneStatus","请长按提示词手动复制。","err")}};
-$("saveScene").onclick=async()=>{let name=$("sName").value.trim();if(!name)return status("sceneStatus","场景名称不能为空。","err");let f=$("sFile").files[0];await put("scenes",{id:uid(),name,type:$("sType").value,time:$("sTime").value,desc:$("sDesc").value,image:f?await fileData(f):"",updatedAt:new Date().toISOString()});status("sceneStatus","场景已保存："+name,"ok");renderLibrary()};
-async function renderLibrary(){let ps=await getAll("people"),ss=await getAll("scenes");$("peopleList").replaceChildren();ps.forEach(p=>{let d=document.createElement("div");d.className="item";let im=document.createElement("img");im.src=p.masterBoard||p.images?.[0]||p.images?.[5]||"";let h=document.createElement("h3");h.textContent=p.name;let txt=document.createElement("p");txt.textContent=`${p.age||"年龄未填"} · ${p.gender||""}\n${p.masterBoard?"已保存主档案设定板":"尚无主档案图片"} · 辅助视图 ${Object.keys(p.images||{}).length}/8`;let a=document.createElement("div");a.className="actions";let e=document.createElement("button");e.className="secondary";e.textContent="编辑";e.onclick=()=>{fillPerson(p);document.querySelector('[data-tab="people"]').click()};let x=document.createElement("button");x.className="danger";x.textContent="删除";x.onclick=async()=>{if(confirm("确定删除人物 "+p.name+"？")){await remove("people",p.id);renderLibrary()}};a.append(e,x);d.append(im,h,txt,a);$("peopleList").append(d)});$("sceneList").replaceChildren();ss.forEach(s=>{let d=document.createElement("div");d.className="item";let im=document.createElement("img");im.src=s.image||"";let h=document.createElement("h3");h.textContent=s.name;let p=document.createElement("p");p.textContent=s.desc||s.time||"场景档案";let a=document.createElement("div");a.className="actions";let x=document.createElement("button");x.className="danger";x.textContent="删除";x.onclick=async()=>{if(confirm("删除场景 "+s.name+"？")){await remove("scenes",s.id);renderLibrary()}};a.append(x);d.append(im,h,p,a);$("sceneList").append(d)})}
-$("exportAll").onclick=async()=>{let data={app:"AI短剧工厂第二阶段",exportedAt:new Date().toISOString(),people:await getAll("people"),scenes:await getAll("scenes")};let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="AI短剧工厂第二阶段备份.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
-$("importAll").onchange=async()=>{let f=$("importAll").files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!confirm(`导入 ${d.people?.length||0} 个人物、${d.scenes?.length||0} 个场景？`))return;for(let p of d.people||[])await put("people",p);for(let s of d.scenes||[])await put("scenes",s);await renderLibrary();alert("导入完成")}catch(e){alert("导入失败："+e.message)}};
-$("genScript").onclick=async()=>{let story=$("story").value.trim();if(!story)return status("scriptStatus","请先输入故事内容。","err");let b=$("genScript");b.disabled=true;b.textContent="生成中…";status("scriptStatus","正在请求Gemini…");$("scriptOutput").hidden=true;try{let r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({story,duration:$("duration").value,genre:$("genre").value})});let d=await r.json();if(!r.ok)throw Error(d.error||"生成失败");$("scriptOutput").textContent=d.result||"无返回内容";$("scriptOutput").hidden=false;status("scriptStatus","生成成功 · "+(d.model||"Gemini"),"ok")}catch(e){status("scriptStatus","生成失败："+e.message,"err")}finally{b.disabled=false;b.textContent="生成剧本方案"}};
-$("copyScript").onclick=async()=>{if($("scriptOutput").hidden)return alert("还没有剧本结果");try{await navigator.clipboard.writeText($("scriptOutput").textContent);status("scriptStatus","剧本已复制。","ok")}catch(e){status("scriptStatus","请长按剧本文本手动复制。","err")}};
-(async()=>{try{db=await openDB();renderSlots({});showMaster("");await renderLibrary()}catch(e){alert("本地数据库初始化失败："+e.message)}})();
+let db,currentId=null,masterPrompt="",scenePromptText="",latestShots=[];
+
+function status(id,t,k=""){
+  const e=$(id);
+  e.textContent=t;
+  e.className="status "+k;
+}
+
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    let r=indexedDB.open("AIShortDramaStage2DB",1);
+    r.onupgradeneeded=()=>{
+      let d=r.result;
+      if(!d.objectStoreNames.contains("people"))d.createObjectStore("people",{keyPath:"id"});
+      if(!d.objectStoreNames.contains("scenes"))d.createObjectStore("scenes",{keyPath:"id"});
+    };
+    r.onsuccess=()=>resolve(r.result);
+    r.onerror=()=>reject(r.error);
+  });
+}
+
+function getAll(s){
+  return new Promise((res,rej)=>{
+    let r=db.transaction(s).objectStore(s).getAll();
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>rej(r.error);
+  });
+}
+function getOne(s,id){
+  return new Promise((res,rej)=>{
+    let r=db.transaction(s).objectStore(s).get(id);
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>rej(r.error);
+  });
+}
+function put(s,o){
+  return new Promise((res,rej)=>{
+    let t=db.transaction(s,"readwrite");
+    t.objectStore(s).put(o);
+    t.oncomplete=()=>res();
+    t.onerror=()=>rej(t.error);
+  });
+}
+function remove(s,id){
+  return new Promise((res,rej)=>{
+    let t=db.transaction(s,"readwrite");
+    t.objectStore(s).delete(id);
+    t.oncomplete=()=>res();
+    t.onerror=()=>rej(t.error);
+  });
+}
+
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const fileData=f=>new Promise((res,rej)=>{
+  let r=new FileReader();
+  r.onload=()=>res(r.result);
+  r.onerror=rej;
+  r.readAsDataURL(f);
+});
+
+function switchTab(tab){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===tab));
+  if(tab==="library")renderLibrary();
+}
+
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+
+function formPerson(){
+  return {
+    name:$("pName").value.trim(),
+    age:$("pAge").value.trim(),
+    gender:$("pGender").value,
+    height:$("pHeight").value.trim(),
+    identity:$("pIdentity").value.trim(),
+    mood:$("pMood").value.trim(),
+    look:$("pLook").value.trim(),
+    hair:$("pHair").value.trim(),
+    clothes:$("pClothes").value.trim(),
+    props:$("pProps").value.trim(),
+    extra:$("pExtra").value.trim()
+  };
+}
+
+function buildMasterPrompt(p){
+  return `请生成一张专业电影/电视剧真人角色定妆多视图设定板，横向16:9或3:2画幅，干净浅灰或白色摄影棚背景，真实摄影质感。
+
+【人物资料】
+姓名：${p.name}
+年龄：${p.age||"未指定"}
+性别：${p.gender}
+身高：${p.height||"未指定"}
+身份：${p.identity||"未指定"}
+性格气质：${p.mood||"未指定"}
+
+【固定外貌】
+${p.look||"按人物设定保持自然真实"}
+
+【固定发型】
+${p.hair||"按人物设定"}
+
+【固定服装】
+${p.clothes||"按人物设定"}
+
+【武器及配饰】
+${p.props||"无特别道具"}
+
+【其他固定特征】
+${p.extra||"无"}
+
+必须展示同一个人物的正面、45度、侧面、背面、正面全身、脸部特写和服装配饰细节。所有视图必须保持脸型、五官、肤色、年龄感、发型、体型和服装完全一致。真人影视演员定妆照风格，电影级写实摄影，真实皮肤纹理，精细服装材质，专业影视角色档案板。避免卡通、动漫、插画、重复肢体、文字乱码和水印。`;
+}
+
+function showMaster(src){
+  let w=$("masterPreviewWrap");
+  w.replaceChildren();
+  if(!src){
+    let d=document.createElement("div");
+    d.className="master-empty";
+    d.textContent="尚未上传人物主档案设定板";
+    w.append(d);
+    return;
+  }
+  let im=document.createElement("img");
+  im.className="master-preview";
+  im.alt="人物主档案多视图设定板";
+  im.src=src;
+  w.append(im);
+}
+
+async function fillPerson(p){
+  currentId=p.id;
+  for(let [k,e] of [
+    ["name","pName"],["age","pAge"],["gender","pGender"],
+    ["height","pHeight"],["identity","pIdentity"],["mood","pMood"],
+    ["look","pLook"],["hair","pHair"],["clothes","pClothes"],
+    ["props","pProps"],["extra","pExtra"]
+  ])$(e).value=p[k]||"";
+
+  masterPrompt=p.masterPrompt||"";
+  $("masterPromptBox").textContent=masterPrompt||"点击按钮生成主档案提示词";
+  showMaster(p.masterBoard||"");
+  renderSlots(p.images||{});
+  status("personStatus","正在编辑："+p.name,"ok");
+}
+
+function renderSlots(images={}){
+  $("viewSlots").replaceChildren();
+  VIEWS.forEach((v,i)=>{
+    let d=document.createElement("div");
+    d.className="slot";
+    let im=document.createElement("img");
+    im.alt=v[0];
+    if(images[i])im.src=images[i];
+    let b=document.createElement("b");
+    b.textContent=v[0];
+    let sm=document.createElement("small");
+    sm.textContent=v[1];
+    let inp=document.createElement("input");
+    inp.type="file";
+    inp.accept="image/*";
+    inp.dataset.i=i;
+    inp.onchange=async()=>{
+      if(inp.files[0])im.src=await fileData(inp.files[0]);
+    };
+    d.append(im,b,sm,inp);
+    $("viewSlots").append(d);
+  });
+}
+
+async function savePerson(){
+  let p=formPerson();
+  if(!p.name){
+    status("personStatus","人物姓名不能为空。","err");
+    return null;
+  }
+  let old=currentId?await getOne("people",currentId):null;
+  p={
+    ...(old||{}),...p,
+    id:currentId||uid(),
+    masterPrompt:masterPrompt||old?.masterPrompt||"",
+    masterBoard:old?.masterBoard||"",
+    images:old?.images||{},
+    updatedAt:new Date().toISOString()
+  };
+  await put("people",p);
+  currentId=p.id;
+  status("personStatus","人物资料已保存："+p.name,"ok");
+  return p;
+}
+
+$("makeMasterPrompt").onclick=()=>{
+  let p=formPerson();
+  if(!p.name)return status("personStatus","请先填写人物姓名。","err");
+  masterPrompt=buildMasterPrompt(p);
+  $("masterPromptBox").textContent=masterPrompt;
+  status("personStatus","主档案提示词已生成。","ok");
+};
+
+$("copyMasterPrompt").onclick=async()=>{
+  if(!masterPrompt)return alert("请先生成主档案提示词");
+  try{
+    await navigator.clipboard.writeText(masterPrompt);
+    status("personStatus","主档案提示词已复制。","ok");
+  }catch(e){
+    status("personStatus","复制失败，请长按提示词手动复制。","err");
+  }
+};
+
+$("savePerson").onclick=savePerson;
+
+$("masterFile").onchange=async()=>{
+  let f=$("masterFile").files[0];
+  if(f)showMaster(await fileData(f));
+};
+
+$("saveMasterBoard").onclick=async()=>{
+  let p=await savePerson();
+  if(!p)return;
+  let f=$("masterFile").files[0];
+  if(f)p.masterBoard=await fileData(f);
+  else if(!p.masterBoard)return status("personStatus","请先选择一张设定板图片。","err");
+  await put("people",p);
+  showMaster(p.masterBoard);
+  status("personStatus","人物主档案设定板已保存。","ok");
+};
+
+$("removeMasterBoard").onclick=async()=>{
+  if(!currentId)return showMaster("");
+  let p=await getOne("people",currentId);
+  if(!p)return;
+  delete p.masterBoard;
+  await put("people",p);
+  $("masterFile").value="";
+  showMaster("");
+  status("personStatus","主档案设定板已从档案中移除。","ok");
+};
+
+$("saveViews").onclick=async()=>{
+  let p=await savePerson();
+  if(!p)return;
+  for(let inp of $("viewSlots").querySelectorAll('input[type=file]')){
+    if(inp.files[0])p.images[inp.dataset.i]=await fileData(inp.files[0]);
+  }
+  await put("people",p);
+  renderSlots(p.images);
+  status("personStatus",`人物资料及辅助视图已保存（${Object.keys(p.images).length}/8）。`,"ok");
+};
+
+$("emptyViews").onclick=()=>{
+  renderSlots({});
+  status("personStatus","辅助视图预览已清空；未保存前不会删除档案中的图片。");
+};
+
+$("clearPerson").onclick=()=>{
+  currentId=null;
+  masterPrompt="";
+  ["pName","pAge","pHeight","pIdentity","pMood","pLook","pHair","pClothes","pProps","pExtra"].forEach(x=>$(x).value="");
+  $("pGender").value="女性";
+  $("masterPromptBox").textContent="填写人物资料后生成主档案提示词。";
+  $("masterFile").value="";
+  showMaster("");
+  renderSlots({});
+  status("personStatus","已清空表单，可以创建新人物。");
+};
+
+$("makeScenePrompt").onclick=()=>{
+  scenePromptText=`真人影视场景参考图，电影级写实摄影。
+场景：${$("sName").value}
+类型：${$("sType").value}
+时间氛围：${$("sTime").value}
+固定空间与陈设：${$("sDesc").value}
+保持布局、家具位置、色彩、光线方向与关键道具一致；真实材质、清晰细节，无文字无水印。`;
+  $("scenePrompt").textContent=scenePromptText;
+};
+
+$("copyScenePrompt").onclick=async()=>{
+  if(!scenePromptText)$("makeScenePrompt").click();
+  try{
+    await navigator.clipboard.writeText(scenePromptText);
+    status("sceneStatus","场景提示词已复制。","ok");
+  }catch(e){
+    status("sceneStatus","请长按提示词手动复制。","err");
+  }
+};
+
+$("saveScene").onclick=async()=>{
+  let name=$("sName").value.trim();
+  if(!name)return status("sceneStatus","场景名称不能为空。","err");
+  let f=$("sFile").files[0];
+  await put("scenes",{
+    id:uid(),name,
+    type:$("sType").value,
+    time:$("sTime").value,
+    desc:$("sDesc").value,
+    image:f?await fileData(f):"",
+    updatedAt:new Date().toISOString()
+  });
+  status("sceneStatus","场景已保存："+name,"ok");
+  renderLibrary();
+};
+
+async function renderLibrary(){
+  let ps=await getAll("people");
+  let ss=await getAll("scenes");
+  $("peopleList").replaceChildren();
+
+  ps.forEach(p=>{
+    let d=document.createElement("div");
+    d.className="item";
+    let im=document.createElement("img");
+    im.src=p.masterBoard||p.images?.[0]||p.images?.[5]||"";
+    let h=document.createElement("h3");
+    h.textContent=p.name;
+    let txt=document.createElement("p");
+    txt.textContent=`${p.age||"年龄未填"} · ${p.gender||""}\n${p.masterBoard?"已保存主档案设定板":"尚无主档案图片"} · 辅助视图 ${Object.keys(p.images||{}).length}/8`;
+    let a=document.createElement("div");
+    a.className="actions";
+    let e=document.createElement("button");
+    e.className="secondary";
+    e.textContent="编辑";
+    e.onclick=()=>{
+      fillPerson(p);
+      switchTab("people");
+    };
+    let x=document.createElement("button");
+    x.className="danger";
+    x.textContent="删除";
+    x.onclick=async()=>{
+      if(confirm("确定删除人物 "+p.name+"？")){
+        await remove("people",p.id);
+        renderLibrary();
+      }
+    };
+    a.append(e,x);
+    d.append(im,h,txt,a);
+    $("peopleList").append(d);
+  });
+
+  $("sceneList").replaceChildren();
+  ss.forEach(s=>{
+    let d=document.createElement("div");
+    d.className="item";
+    let im=document.createElement("img");
+    im.src=s.image||"";
+    let h=document.createElement("h3");
+    h.textContent=s.name;
+    let p=document.createElement("p");
+    p.textContent=s.desc||s.time||"场景档案";
+    let a=document.createElement("div");
+    a.className="actions";
+    let x=document.createElement("button");
+    x.className="danger";
+    x.textContent="删除";
+    x.onclick=async()=>{
+      if(confirm("删除场景 "+s.name+"？")){
+        await remove("scenes",s.id);
+        renderLibrary();
+      }
+    };
+    a.append(x);
+    d.append(im,h,p,a);
+    $("sceneList").append(d);
+  });
+}
+
+$("exportAll").onclick=async()=>{
+  let data={
+    app:"AI短剧工厂第二阶段",
+    exportedAt:new Date().toISOString(),
+    people:await getAll("people"),
+    scenes:await getAll("scenes")
+  };
+  let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="AI短剧工厂第二阶段备份.json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+$("importAll").onchange=async()=>{
+  let f=$("importAll").files[0];
+  if(!f)return;
+  try{
+    let d=JSON.parse(await f.text());
+    if(!confirm(`导入 ${d.people?.length||0} 个人物、${d.scenes?.length||0} 个场景？`))return;
+    for(let p of d.people||[])await put("people",p);
+    for(let s of d.scenes||[])await put("scenes",s);
+    await renderLibrary();
+    alert("导入完成");
+  }catch(e){
+    alert("导入失败："+e.message);
+  }
+};
+
+// =====================================
+// 剧本生成
+// =====================================
+
+$("genScript").onclick=async()=>{
+  let story=$("story").value.trim();
+  if(!story)return status("scriptStatus","请先输入故事内容。","err");
+
+  let b=$("genScript");
+  b.disabled=true;
+  b.textContent="生成中…";
+  status("scriptStatus","正在请求Gemini…");
+  $("scriptOutput").hidden=true;
+
+  try{
+    let r=await fetch("/api/generate",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        story,
+        duration:Number($("duration").value),
+        genre:$("genre").value
+      })
+    });
+
+    let d=await r.json();
+    if(!r.ok)throw Error(d.error||"生成失败");
+
+    $("scriptOutput").textContent=d.result||"无返回内容";
+    $("scriptOutput").hidden=false;
+    $("boardScript").value=d.result||"";
+    $("boardDuration").value=String(d.duration||$("duration").value);
+    $("boardGenre").value=$("genre").value;
+
+    status("scriptStatus","生成成功 · "+(d.model||"Gemini")+" · "+d.duration+"秒","ok");
+  }catch(e){
+    status("scriptStatus","生成失败："+e.message,"err");
+  }finally{
+    b.disabled=false;
+    b.textContent="生成剧本方案";
+  }
+};
+
+$("copyScript").onclick=async()=>{
+  if($("scriptOutput").hidden)return alert("还没有剧本结果");
+  try{
+    await navigator.clipboard.writeText($("scriptOutput").textContent);
+    status("scriptStatus","剧本已复制。","ok");
+  }catch(e){
+    status("scriptStatus","请长按剧本文本手动复制。","err");
+  }
+};
+
+$("toStoryboard").onclick=()=>{
+  if(!$("scriptOutput").hidden){
+    $("boardScript").value=$("scriptOutput").textContent;
+    $("boardDuration").value=$("duration").value;
+    $("boardGenre").value=$("genre").value;
+  }
+  switchTab("storyboard");
+};
+
+// =====================================
+// 分镜数量实时计算
+// =====================================
+
+function updateShotCalculation(){
+  const total=Number($("boardDuration").value);
+  const clip=Number($("clipDuration").value);
+  const count=total/clip;
+  $("shotCalculation").textContent=
+    `${total}秒 ÷ ${clip}秒 = ${count}个镜头；总时长${total}秒`;
+}
+$("boardDuration").onchange=updateShotCalculation;
+$("clipDuration").onchange=updateShotCalculation;
+
+// =====================================
+// 自动分镜生成
+// =====================================
+
+function addDetail(container,title,value){
+  const label=document.createElement("label");
+  label.textContent=title;
+  const p=document.createElement("p");
+  p.textContent=value||"无";
+  container.append(label,p);
+}
+
+function renderShots(shots){
+  latestShots=shots||[];
+  const list=$("shotList");
+  list.replaceChildren();
+
+  latestShots.forEach((s,index)=>{
+    const card=document.createElement("div");
+    card.className="shot";
+
+    const head=document.createElement("div");
+    head.className="shot-head";
+
+    const title=document.createElement("h3");
+    title.textContent=`镜头${String(s.shotNumber).padStart(2,"0")}｜${s.shotTitle}`;
+
+    const tag=document.createElement("span");
+    tag.className="shot-tag";
+    tag.textContent=`${s.duration}秒`;
+
+    head.append(title,tag);
+    card.append(head);
+
+    addDetail(card,"场景",s.sceneName);
+    addDetail(card,"出场人物",(s.characters||[]).join("、"));
+    addDetail(card,"画面内容",s.visual);
+    addDetail(card,"人物动作与表情",s.action);
+    addDetail(card,"人物对白",s.dialogue);
+    addDetail(card,"镜头与运镜",s.camera);
+    addDetail(card,"声音设计",s.audio);
+    addDetail(card,"连续性要求",s.continuity);
+
+    const label=document.createElement("label");
+    label.textContent="AI视频生成提示词（可直接复制）";
+
+    const prompt=document.createElement("textarea");
+    prompt.className="prompt";
+    prompt.value=s.videoPrompt;
+
+    const actions=document.createElement("div");
+    actions.className="actions";
+
+    const copy=document.createElement("button");
+    copy.textContent="复制本镜头提示词";
+    copy.onclick=async()=>{
+      try{
+        await navigator.clipboard.writeText(prompt.value);
+        status("boardStatus",`镜头${s.shotNumber}提示词已复制。`,"ok");
+      }catch(e){
+        prompt.focus();
+        prompt.select();
+        status("boardStatus","复制失败，请长按选中文本复制。","err");
+      }
+    };
+
+    actions.append(copy);
+    card.append(label,prompt,actions);
+    list.append(card);
+  });
+}
+
+$("generateBoard").onclick=async()=>{
+  const script=$("boardScript").value.trim();
+  if(!script)return status("boardStatus","请先生成剧本，或粘贴完整剧本。","err");
+
+  const episodeDuration=Number($("boardDuration").value);
+  const clipDuration=Number($("clipDuration").value);
+  const expectedCount=episodeDuration/clipDuration;
+
+  const button=$("generateBoard");
+  button.disabled=true;
+  button.textContent="AI正在拆分镜头…";
+  status("boardStatus",`正在规划${expectedCount}个镜头，请稍候…`);
+  $("shotList").replaceChildren();
+  $("boardSummary").textContent="正在生成分镜……";
+
+  try{
+    const people=await getAll("people");
+    const scenes=await getAll("scenes");
+
+    // 只发送人物和场景的文字资料，不发送图片Base64。
+    const r=await fetch("/api/storyboard",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        script,
+        episodeDuration,
+        clipDuration,
+        genre:$("boardGenre").value,
+        characters:people.map(p=>({
+          name:p.name,age:p.age,gender:p.gender,height:p.height,
+          identity:p.identity,mood:p.mood,look:p.look,hair:p.hair,
+          clothes:p.clothes,props:p.props,extra:p.extra
+        })),
+        scenes:scenes.map(s=>({
+          name:s.name,type:s.type,time:s.time,desc:s.desc
+        }))
+      })
+    });
+
+    const d=await r.json();
+    if(!r.ok)throw Error(d.error||"分镜生成失败");
+
+    renderShots(d.shots);
+
+    $("boardSummary").textContent=
+      `${d.title}｜${d.shotCount}个镜头｜每段${d.clipDuration}秒｜总时长${d.totalDuration}秒。${d.summary||""}`;
+
+    status("boardStatus",`分镜生成成功！共${d.shotCount}个镜头，总时长${d.totalDuration}秒。`,"ok");
+  }catch(e){
+    $("boardSummary").textContent="分镜生成失败。";
+    status("boardStatus","生成失败："+e.message,"err");
+  }finally{
+    button.disabled=false;
+    button.textContent="AI自动拆分镜头";
+  }
+};
+
+$("copyAllPrompts").onclick=async()=>{
+  if(!latestShots.length)return alert("请先生成分镜");
+
+  const text=latestShots.map(s=>
+    `【镜头${s.shotNumber}｜${s.duration}秒｜${s.shotTitle}】\n${s.videoPrompt}`
+  ).join("\n\n------------------------------\n\n");
+
+  try{
+    await navigator.clipboard.writeText(text);
+    status("boardStatus",`已复制全部${latestShots.length}个镜头的视频提示词。`,"ok");
+  }catch(e){
+    const area=document.createElement("textarea");
+    area.value=text;
+    document.body.append(area);
+    area.select();
+    status("boardStatus","自动复制失败，请长按选中文本复制。","err");
+    area.remove();
+  }
+};
+
+// =====================================
+// 初始化
+// =====================================
+
+(async()=>{
+  try{
+    db=await openDB();
+    renderSlots({});
+    showMaster("");
+    await renderLibrary();
+    updateShotCalculation();
+  }catch(e){
+    alert("本地数据库初始化失败："+e.message);
+  }
+})();
 </script>
 
 <script src="/character-sync.js"></script>
-
 </body>
 </html>
